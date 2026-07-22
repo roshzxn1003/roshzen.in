@@ -1,0 +1,413 @@
+﻿.developer-terminal {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--dt-accent), transparent 58%);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 32%),
+    radial-gradient(circle at 12% 12%, var(--dt-accent-soft), transparent 32%),
+    var(--dt-bg);
+  box-shadow:
+    0 34px 110px rgba(0, 0, 0, 0.42),
+    0 0 58px var(--dt-accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: var(--dt-text);
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  isolation: isolate;
+  backdrop-filter: blur(24px) saturate(140%);
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease;
+}
+
+
+.developer-terminal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, transparent 0, color-mix(in srgb, var(--dt-accent), transparent 94%) 50%, transparent 100%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.025) 0,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+
+.dt-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--dt-header);
+}
+
+
+.dt-window-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.dt-control {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+
+.dt-close {
+  background: #ff5f57;
+}
+
+
+.dt-minimize {
+  background: #ffbd2e;
+}
+
+
+.dt-maximize {
+  background: #28c840;
+}
+
+
+.dt-title {
+  min-width: 0;
+  text-align: center;
+  color: var(--dt-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.dt-title strong {
+  margin-left: 8px;
+  color: var(--dt-accent);
+  font-weight: 700;
+}
+
+
+.dt-activity {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--dt-success);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+
+.dt-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 16px currentColor;
+  animation: dt-pulse 1.4s ease-in-out infinite;
+}
+
+
+.dt-body {
+  position: relative;
+  z-index: 2;
+  height: 366px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 18px 20px 22px;
+  scroll-behavior: smooth;
+  scrollbar-color: var(--dt-accent) rgba(255, 255, 255, 0.08);
+  scrollbar-width: thin;
+}
+
+
+.dt-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+
+.dt-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+
+
+.dt-body::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--dt-accent), color-mix(in srgb, var(--dt-accent), #ffffff 26%));
+}
+
+
+.dt-history {
+  display: grid;
+  gap: 8px;
+}
+
+
+.dt-row,
+.dt-input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 0;
+}
+
+
+.dt-row,
+.dt-output {
+  animation: dt-fade-up 180ms ease both;
+}
+
+
+.dt-prompt {
+  flex: 0 0 auto;
+  color: var(--dt-prompt);
+  font-weight: 800;
+  text-shadow: 0 0 14px var(--dt-accent-glow);
+  white-space: nowrap;
+}
+
+
+.dt-command,
+.dt-input-visual {
+  min-width: 0;
+  color: var(--dt-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+
+.dt-command-name {
+  color: var(--dt-text);
+  font-weight: 800;
+}
+
+
+.dt-command-args {
+  color: var(--dt-warning);
+}
+
+
+.dt-output {
+  margin: 2px 0 10px;
+  color: var(--dt-output);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+
+.dt-output-line {
+  min-height: 1.55em;
+}
+
+
+.dt-output-success {
+  color: var(--dt-success);
+}
+
+
+.dt-output-warning {
+  color: var(--dt-warning);
+}
+
+
+.dt-output-error {
+  color: var(--dt-error);
+}
+
+
+.dt-output-ascii,
+.dt-output-json {
+  color: var(--dt-accent);
+}
+
+
+.dt-output-list {
+  color: var(--dt-output);
+}
+
+
+.dt-output-system {
+  border-left: 2px solid var(--dt-accent);
+  margin-bottom: 14px;
+  padding-left: 12px;
+  color: var(--dt-muted);
+}
+
+
+.dt-input-row {
+  position: relative;
+  margin-top: 4px;
+  min-height: 1.7em;
+  cursor: text;
+}
+
+
+.dt-input-row.is-focused .dt-cursor {
+  opacity: 1;
+}
+
+
+.dt-input-visual {
+  flex: 1;
+}
+
+
+.dt-input-value:empty::before {
+  content: '';
+}
+
+
+.dt-cursor {
+  display: inline-block;
+  width: 9px;
+  height: 1.14em;
+  margin-left: 2px;
+  transform: translateY(0.2em);
+  background: var(--dt-accent);
+  box-shadow: 0 0 18px var(--dt-accent-glow);
+  animation: dt-blink 1s steps(2, start) infinite;
+}
+
+
+.dt-hidden-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  opacity: 0;
+  color: transparent;
+  background: transparent;
+  caret-color: transparent;
+}
+
+
+.dt-matrix {
+  position: absolute;
+  inset: 54px 0 0;
+  z-index: 1;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+}
+
+
+.dt-matrix span {
+  position: absolute;
+  top: -80%;
+  width: 1em;
+  color: var(--dt-success);
+  font-size: 0.82rem;
+  line-height: 1.1;
+  text-shadow: 0 0 14px currentColor;
+  writing-mode: vertical-rl;
+  opacity: 0.62;
+  animation-name: dt-matrix-rain;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+
+.theme-light .dt-matrix {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+
+@keyframes dt-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+
+@keyframes dt-pulse {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.78);
+  }
+}
+
+
+@keyframes dt-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes dt-matrix-rain {
+  to {
+    transform: translateY(210%);
+  }
+}
+
+
+@media (max-width: 640px) {
+  .developer-terminal {
+    min-height: 390px;
+    border-radius: 18px;
+  }
+
+
+  .dt-header {
+    grid-template-columns: auto 1fr;
+  }
+
+
+  .dt-activity {
+    display: none;
+  }
+
+
+  .dt-title {
+    text-align: right;
+  }
+
+
+  .dt-body {
+    height: 330px;
+    padding: 16px;
+    font-size: 0.82rem;
+  }
+
+
+  .dt-row,
+  .dt-input-row {
+    gap: 7px;
+  }
+
+
+  .dt-prompt {
+    max-width: 138px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

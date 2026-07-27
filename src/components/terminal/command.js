@@ -64,6 +64,7 @@ const commandList = [
   'quote',
   'matrix',
   'stop',
+  'fullscreen',
   'banner',
   'welcome',
   'portfolio',
@@ -248,6 +249,10 @@ export const executeCommand = (rawCommand, context) => {
     case 'stop':
       context.setMatrixActive(false)
       return [makeOutput('warning', 'Matrix rain animation stopped.')]
+
+    case 'fullscreen':
+      context.toggleFullscreen()
+      return [makeOutput('success', 'Fullscreen toggled. Press Esc to exit fullscreen.')]
 
     case 'banner':
       return [

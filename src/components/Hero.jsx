@@ -7,12 +7,12 @@ const resumeUrl = '/AR-resume.pdf'
 
 function Hero({ heroStats, techBadges }) {
   return (
-    <section id="home" className="section-shell relative flex min-h-screen items-center pt-24 sm:pt-28">
+    <section id="home" className="section-shell relative flex min-h-screen items-stretch pt-24 sm:pt-28">
       <div className="hero-lines" aria-hidden="true" />
 
-      <div className="relative z-10 flex w-full flex-col items-center gap-10 py-10 sm:py-12 lg:flex-row lg:justify-between lg:gap-12 lg:py-16">
+      <div className="relative z-10 flex w-full flex-1 flex-col items-center gap-10 py-10 sm:py-12 lg:flex-row lg:items-stretch lg:justify-between lg:gap-12 lg:py-16" style={{ minHeight: 0 }}>
         <motion.div
-          className="w-full min-w-0 flex-1 text-center lg:text-left"
+          className="w-full min-w-0 flex-1 self-center text-center lg:text-left"
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -93,12 +93,13 @@ function Hero({ heroStats, techBadges }) {
         </motion.div>
 
         <motion.div
-          className="relative z-10 w-full min-w-0 flex-shrink-0 sm:max-w-[620px] lg:w-[430px] lg:max-w-none xl:w-[470px]"
+          className="relative z-10 flex w-full min-w-0 flex-col lg:max-w-none"
+          style={{ flex: '1 1 0', maxWidth: '480px', alignSelf: 'stretch', display: 'flex', flexDirection: 'column' }}
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="profile-shell glass-panel mx-auto overflow-hidden rounded-3xl">
+          <div className="profile-shell glass-panel mx-auto rounded-3xl" style={{ display: 'flex', flexDirection: 'column', flex: '1', minHeight: 0, overflow: 'hidden', width: '100%' }}>
             <div className="flex items-center justify-between border-b border-red-400/15 bg-red-500/[0.035] px-5 py-4">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-red-400" />
@@ -108,7 +109,7 @@ function Hero({ heroStats, techBadges }) {
               <span className="font-mono text-xs text-slate-400">developer-card.jsx</span>
             </div>
 
-            <div className="p-4 sm:p-5 xl:p-6">
+            <div style={{ display: 'flex', flex: '1', minHeight: 0, flexDirection: 'column', padding: '1rem' }}>
               <div className="flex flex-col items-center gap-5 sm:flex-row lg:flex-col">
                 <div className="w-full max-w-[230px] shrink-0 overflow-hidden rounded-3xl border border-red-400/35 bg-[#140606] p-2 shadow-[0_0_54px_rgba(220,38,38,0.3)] sm:max-w-[220px] lg:max-w-[250px] xl:max-w-[280px]">
                   <img
@@ -136,7 +137,7 @@ function Hero({ heroStats, techBadges }) {
                 </div>
               </div>
 
-              <div className="mt-5">
+              <div style={{ display: 'flex', flex: '1', minHeight: 0, flexDirection: 'column', marginTop: '1.25rem' }}>
                 <TypingTerminal />
               </div>
 

@@ -66,18 +66,26 @@ export const skillGroups = [
 
 export const projects = [
   {
-    title: 'Zen Coder',
-    idea: 'A daily learning app idea for programming practice, AI-assisted learning, and vibe coding discipline.',
-    stack: ['React', 'Tailwind CSS', 'Learning UX'],
-    features: ['Daily coding goals', 'Progress cards', 'Focused practice flow'],
-    github: '',
-    live: '',
+    title: 'RoshZen Portfolio',
+    idea: 'My personal red-black cyber-tech portfolio website for presenting skills, projects, services, and learning progress.',
+    stack: ['React', 'Tailwind CSS', 'Motion'],
+    features: ['Responsive sections', 'Premium red theme', 'Recruiter-friendly content'],
+    github: 'https://github.com/roshzxn1003/portfolio',
+    live: 'www.roshzen.in ',
   },
-  {
+   {
     title: 'Love Vault',
     idea: 'A private couple memories app concept for saving moments, notes, dates, and emotional digital keepsakes.',
     stack: ['React', 'Supabase', 'Mobile UI'],
     features: ['Private vault concept', 'Memory timeline', 'Secure app structure'],
+    github: '',
+    live: '',
+  },
+  {
+    title: 'Zen Coder',
+    idea: 'A daily learning app idea for programming practice, AI-assisted learning, and vibe coding discipline.',
+    stack: ['React', 'Tailwind CSS', 'Learning UX'],
+    features: ['Daily coding goals', 'Progress cards', 'Focused practice flow'],
     github: '',
     live: '',
   },
@@ -102,14 +110,6 @@ export const projects = [
     idea: 'A beginner-friendly Python learning platform idea built around simple daily lessons and practice tasks.',
     stack: ['Python', 'React', 'Education UX'],
     features: ['Beginner lessons', 'Practice prompts', 'Daily consistency flow'],
-    github: '',
-    live: '',
-  },
-  {
-    title: 'RoshZen Portfolio',
-    idea: 'My personal red-black cyber-tech portfolio website for presenting skills, projects, services, and learning progress.',
-    stack: ['React', 'Tailwind CSS', 'Motion'],
-    features: ['Responsive sections', 'Premium red theme', 'Recruiter-friendly content'],
     github: '',
     live: '',
   },

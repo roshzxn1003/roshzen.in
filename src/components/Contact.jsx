@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { ArrowUpRight, CheckCircle2, Loader2, Send, XCircle } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 import Reveal from './Reveal'
 import SectionHeader from './SectionHeader'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const INITIAL = { name: '', email: '', projectType: 'Portfolio website', message: '' }
 
@@ -22,23 +21,31 @@ function Contact({ socialLinks }) {
     setErrorMsg('')
 
     try {
-      const res = await fetch(`${API_URL}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      const data = await res.json()
-
-      if (!res.ok) {
-        setErrorMsg(data.error || 'Something went wrong. Please try again.')
-        setStatus('error')
-        return
-      }
+      // Replaced the custom backend fetch with EmailJS
+      await emailjs.send(
+        'service_eo8uktg',    // Replace with your EmailJS Service ID
+        'template_mlzrdgm',   // Replace with your EmailJS Template ID
+        {
+          from_name: form.name,
+          from_email: form.email,
+          project_type: form.projectType,
+          message: form.message,
+          to_name: 'Arun', 
+        },
+        'rhqTqDs_ZjQQv3mBy'     // Replace with your EmailJS Public Key
+      )
 
       setStatus('success')
       setForm(INITIAL)
-    } catch {
-      setErrorMsg('Could not reach the server. Make sure the backend is running.')
+      
+      // Optional: Reset the success message after 5 seconds
+      setTimeout(() => {
+        if (status !== 'error') setStatus('idle')
+      }, 5000)
+
+    } catch (error) {
+      console.error('EmailJS Error:', error)
+      setErrorMsg('Could not send the message. Please check your connection and try again.')
       setStatus('error')
     }
   }
@@ -48,7 +55,7 @@ function Contact({ socialLinks }) {
       <SectionHeader
         eyebrow="Contact"
         title="Have an idea, project, or collaboration? Send a message."
-        text="Fill in the form and your message will be saved directly to the server. I'll get back to you soon."
+        text="Fill in the form and your message will be sent directly to my inbox. I'll get back to you soon."
       />
 
       <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
@@ -166,14 +173,14 @@ function Contact({ socialLinks }) {
                 name="projectType"
                 value={form.projectType}
                 onChange={handleChange}
-                className="contact-input"
+                className="contact-input text-slate-900"
                 disabled={status === 'loading'}
               >
-                <option>Portfolio website</option>
-                <option>React app idea</option>
-                <option>Church website</option>
-                <option>Student project</option>
-                <option>Creative design idea</option>
+                <option value="Portfolio website">Portfolio website</option>
+                <option value="React app idea">React app idea</option>
+                <option value="Church website">Church website</option>
+                <option value="Student project">Student project</option>
+                <option value="Creative design idea">Creative design idea</option>
               </select>
             </label>
 

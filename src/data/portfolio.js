@@ -78,8 +78,8 @@ export const projects = [
     idea: 'A private couple memories app concept for saving moments, notes, dates, and emotional digital keepsakes.',
     stack: ['React', 'Supabase', 'Mobile UI'],
     features: ['Private vault concept', 'Memory timeline', 'Secure app structure'],
-    github: '',
-    live: '',
+    github: 'https://github.com/roshzxn1003/zen-love-vault',
+    live: 'https://zen-love-vault.vercel.app',
   },
   {
     title: 'Zen Coder',
@@ -90,7 +90,7 @@ export const projects = [
     live: '',
   },
   {
-    title: 'Berachah Christian Assembly Website',
+    title: 'Website',
     idea: 'A church website project for events, worship updates, ministry details, and contact.',
     stack: ['React', 'Responsive Web', 'Content UI'],
     features: ['Service info', 'Event sections', 'Clean community pages'],

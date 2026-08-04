@@ -178,9 +178,10 @@ function Contact({ socialLinks }) {
               >
                 <option value="Portfolio website">Portfolio website</option>
                 <option value="React app idea">React app idea</option>
-                <option value="Church website">Church website</option>
+                <option value="Church website">websites</option>
                 <option value="Student project">Student project</option>
                 <option value="Creative design idea">Creative design idea</option>
+                <option value="Creative design idea">others</option>
               </select>
             </label>
 

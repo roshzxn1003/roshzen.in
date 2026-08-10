@@ -1,9 +1,50 @@
 import { ArrowRight, Download, Mail, Sparkles, Terminal } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useState, useEffect } from 'react'
 import arunAvatar from '../assets/arun-roshan-avatar.png'
 import TypingTerminal from './TypingTerminal'
 
 const resumeUrl = '/AR-resume.pdf'
+
+const roles = [
+  'CSE Student',
+  'Frontend Developer',
+  'App Developer',
+  'React Builder',
+  'Future Software Engineer',
+]
+
+function TypingRoles() {
+  const [roleIndex, setRoleIndex] = useState(0)
+  const [text, setText] = useState('')
+  const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    const current = roles[roleIndex]
+    let timeout
+
+    if (!deleting && text === current) {
+      timeout = setTimeout(() => setDeleting(true), 2000)
+    } else if (deleting && text === '') {
+      setDeleting(false)
+      setRoleIndex((prev) => (prev + 1) % roles.length)
+    } else {
+      const speed = deleting ? 40 : 80
+      timeout = setTimeout(() => {
+        setText(deleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1))
+      }, speed)
+    }
+
+    return () => clearTimeout(timeout)
+  }, [text, deleting, roleIndex])
+
+  return (
+    <span>
+      {text}
+      <span className="ml-0.5 inline-block h-[1.1em] w-[2px] animate-pulse bg-red-400 align-middle" />
+    </span>
+  )
+}
 
 function Hero({ heroStats, techBadges }) {
   return (
@@ -32,7 +73,7 @@ function Hero({ heroStats, techBadges }) {
           </h1>
 
           <p className="mx-auto mt-5 max-w-3xl font-mono text-xs uppercase leading-6 tracking-[0.12em] text-red-200 sm:text-sm sm:tracking-[0.18em] lg:mx-0">
-            CSE Student • Frontend Developer • App Developer • Future Software Engineer
+            <TypingRoles />
           </p>
 
           <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg lg:mx-0">

@@ -72,7 +72,7 @@
   grid-template-rows: repeat(6, 1fr);
   overflow: hidden;
   pointer-events: none;
-  mask-image: radial-gradient(circle at 50% 32%, black 0%, transparent 72%);
+  mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 85%);
   opacity: 0.46;
 }
 
@@ -92,12 +92,12 @@
 }
 
 .binary-field span:nth-child(odd) {
-  animation: binary-slide-right 24s linear infinite;
+  animation: binary-slide-right 24s linear infinite alternate;
 }
 
 .binary-field span:nth-child(even) {
   justify-self: end;
-  animation: binary-slide-left 28s linear infinite;
+  animation: binary-slide-left 28s linear infinite alternate;
 }
 
 .binary-field span:nth-child(2) {
@@ -161,6 +161,7 @@
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transform: translateZ(0);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-shell {
@@ -331,10 +332,7 @@
   padding: 0.9rem 1rem;
   color: #f8fafc;
   outline: none;
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    background 180ms ease;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .contact-input::placeholder {
@@ -345,12 +343,15 @@
   border-color: rgba(239, 68, 68, 0.72);
   background: rgba(9, 9, 9, 0.76);
   box-shadow:
-    0 0 0 4px rgba(239, 68, 68, 0.12),
-    0 0 28px rgba(220, 38, 38, 0.1);
+    0 0 0 4px rgba(239, 68, 68, 0.15),
+    0 0 32px rgba(220, 38, 38, 0.15),
+    0 0 60px rgba(239, 68, 68, 0.05);
+  transform: translateY(-1px);
 }
 
 section {
   position: relative;
+  transition: opacity 0.6s ease;
 }
 
 section:not(:last-of-type)::after {
@@ -720,24 +721,43 @@ body:has(.dt-fullscreen-root) .custom-cursor {
 }
 
 @media (hover: none), (pointer: coarse) {
-  .site-backdrop::before,
-  .binary-field span {
+  .site-backdrop::before {
     animation: none;
   }
 
   .binary-field {
-    opacity: 0.18;
+    opacity: 0.28;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .binary-field span,
   .motion-strip-track,
   .site-backdrop::before,
   .scanline,
   .hero-title-glow::before {
     animation: none;
   }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(220, 38, 38, 0.3), 0 0 60px rgba(239, 68, 68, 0.1); }
 }
 
 .custom-cursor-enabled,

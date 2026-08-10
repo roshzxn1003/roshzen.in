@@ -18,6 +18,10 @@ function TerminalInput({
   onHistoryPrevious,
   onHistoryNext,
   onAutocomplete,
+  onInterrupt,
+  onClearScreen,
+  onEof,
+  onSuspend,
   focused,
   onFocus,
   playSound,
@@ -44,6 +48,124 @@ function TerminalInput({
   }
 
   const handleKeyDown = (event) => {
+    const isCtrl = event.ctrlKey || event.metaKey
+    const key = event.key.toLowerCase()
+
+    // 1. CTRL + C (SIGINT - Interrupt / Cancel command / Stop process)
+    if (isCtrl && key === 'c') {
+      event.preventDefault()
+      if (onInterrupt) onInterrupt(value)
+      return
+    }
+
+    // 2. CTRL + L (Clear Screen)
+    if (isCtrl && key === 'l') {
+      event.preventDefault()
+      if (onClearScreen) onClearScreen()
+      return
+    }
+
+    // 3. CTRL + U (Erase line from cursor to start)
+    if (isCtrl && key === 'u') {
+      event.preventDefault()
+      const inputEl = inputRef.current
+      if (inputEl) {
+        const selStart = inputEl.selectionStart || 0
+        const newValue = value.slice(selStart)
+        onChange(newValue)
+        setTimeout(() => {
+          inputEl.setSelectionRange(0, 0)
+        }, 0)
+      } else {
+        onChange('')
+      }
+      return
+    }
+
+    // 4. CTRL + K (Erase line from cursor to end)
+    if (isCtrl && key === 'k') {
+      event.preventDefault()
+      const inputEl = inputRef.current
+      if (inputEl) {
+        const selStart = inputEl.selectionStart || 0
+        const newValue = value.slice(0, selStart)
+        onChange(newValue)
+      } else {
+        onChange('')
+      }
+      return
+    }
+
+    // 5. CTRL + W (Erase word before cursor)
+    if (isCtrl && key === 'w') {
+      event.preventDefault()
+      const inputEl = inputRef.current
+      if (inputEl) {
+        const pos = inputEl.selectionStart || 0
+        const before = value.slice(0, pos)
+        const after = value.slice(pos)
+        const trimmedBefore = before.replace(/\s+$/, '')
+        const lastSpace = trimmedBefore.lastIndexOf(' ')
+        const newBefore = lastSpace === -1 ? '' : trimmedBefore.slice(0, lastSpace + 1)
+        const newValue = newBefore + after
+        onChange(newValue)
+        setTimeout(() => {
+          inputEl.setSelectionRange(newBefore.length, newBefore.length)
+        }, 0)
+      }
+      return
+    }
+
+    // 6. CTRL + A (Move cursor to start of line)
+    if (isCtrl && key === 'a') {
+      event.preventDefault()
+      inputRef.current?.setSelectionRange(0, 0)
+      return
+    }
+
+    // 7. CTRL + E (Move cursor to end of line)
+    if (isCtrl && key === 'e') {
+      event.preventDefault()
+      const len = value.length
+      inputRef.current?.setSelectionRange(len, len)
+      return
+    }
+
+    // 8. CTRL + D (EOF / Delete character)
+    if (isCtrl && key === 'd') {
+      event.preventDefault()
+      if (!value) {
+        if (onEof) onEof()
+      } else {
+        const inputEl = inputRef.current
+        if (inputEl) {
+          const pos = inputEl.selectionStart || 0
+          if (pos < value.length) {
+            const newValue = value.slice(0, pos) + value.slice(pos + 1)
+            onChange(newValue)
+            setTimeout(() => {
+              inputEl.setSelectionRange(pos, pos)
+            }, 0)
+          }
+        }
+      }
+      return
+    }
+
+    // 9. CTRL + Z (Suspend process)
+    if (isCtrl && key === 'z') {
+      event.preventDefault()
+      if (onSuspend) onSuspend()
+      return
+    }
+
+    // 10. CTRL + R (Reverse search history)
+    if (isCtrl && key === 'r') {
+      event.preventDefault()
+      if (onHistoryPrevious) onHistoryPrevious()
+      return
+    }
+
     if (event.key === 'Enter') {
       event.preventDefault()
       onSubmit()

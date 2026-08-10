@@ -305,6 +305,39 @@ function Terminal() {
     ].slice(-120))
   }
 
+  const handleInterrupt = (currentInput) => {
+    const cancelledText = currentInput ? `${currentInput}^C` : '^C'
+    setEntries((previous) => [
+      ...previous,
+      createCommandEntry(cancelledText),
+    ].slice(-120))
+    setInput('')
+    setMatrixActive(false)
+    if (soundEnabled) soundFX.playTyping()
+  }
+
+  const handleClearScreen = () => {
+    clearTerminal()
+    if (soundEnabled) soundFX.playEnter()
+  }
+
+  const handleEof = () => {
+    setEntries((previous) => [
+      ...previous,
+      createOutputEntry({ type: 'warning', lines: ['logout', '[Process completed - type "boot" to restart session]'] }),
+    ].slice(-120))
+    setInput('')
+  }
+
+  const handleSuspend = () => {
+    setMatrixActive(false)
+    setEntries((previous) => [
+      ...previous,
+      createOutputEntry({ type: 'output', lines: ['[1]+ Stopped (suspended)'] }),
+    ].slice(-120))
+    setInput('')
+  }
+
   const showPreviousCommand = () => {
     if (history.length === 0) return
 
@@ -427,6 +460,10 @@ function Terminal() {
               onHistoryPrevious={showPreviousCommand}
               onHistoryNext={showNextCommand}
               onAutocomplete={autocomplete}
+              onInterrupt={handleInterrupt}
+              onClearScreen={handleClearScreen}
+              onEof={handleEof}
+              onSuspend={handleSuspend}
               focused={focused}
               onFocus={() => setFocused(true)}
               playSound={playSound}

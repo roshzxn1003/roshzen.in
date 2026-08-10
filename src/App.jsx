@@ -9,6 +9,9 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
 import ScrollIndicator from './components/ScrollIndicator'
+import BackToTop from './components/BackToTop'
+import Preloader from './components/Preloader'
+import MouseSpotlight from './components/MouseSpotlight'
 import {
   designPrinciples,
   heroStats,
@@ -25,6 +28,7 @@ import './App.css'
 function App() {
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-[#050505] text-slate-100">
+      <Preloader />
       <div className="app-background" aria-hidden="true">
         <div className="site-backdrop" />
         <div className="tech-grid" />
@@ -41,6 +45,8 @@ function App() {
 
       <CustomCursor />
       <ScrollIndicator />
+      <BackToTop />
+      <MouseSpotlight />
       <div className="relative z-10">
         <Navbar />
         <Hero heroStats={heroStats} techBadges={techBadges} />

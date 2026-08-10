@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, ExternalLink, GitBranch, Globe2, Mail, MessageSquare } from 'lucide-react'
+import { ArrowUpRight, ExternalLink, GitBranch, Globe2, Mail, MessageSquare, QrCode } from 'lucide-react'
 
 // 1. LIVE CLOCK
 export function LiveClock() {
@@ -117,26 +117,59 @@ export function FakeHacker({ target = 'NASA' }) {
   )
 }
 
-// 4. QR GENERATOR
+// 4. REAL QR GENERATOR
 export function QrCodeGenerator({ text, url }) {
+  const targetUrl = url || 'https://github.com/roshzxn1003'
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(targetUrl)}&color=000000&bgcolor=ffffff`
+  const fallbackQrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=250x250&chl=${encodeURIComponent(targetUrl)}`
+
+  const [imgSrc, setImgSrc] = useState(qrApiUrl)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setImgSrc(qrApiUrl)
+    setLoading(true)
+  }, [targetUrl])
+
   return (
-    <div className="my-3 inline-flex flex-col items-center rounded-2xl border border-red-500/30 bg-black/90 p-4 text-center font-mono shadow-xl">
-      <div className="mb-2 text-xs font-bold text-red-400 tracking-wider">QR CODE: {text.toUpperCase()}</div>
-      <div className="bg-white p-3 rounded-xl shadow-md">
-        <svg className="w-36 h-36" viewBox="0 0 29 29">
-          <path
-            fill="#000000"
-            d="M0 0h7v7H0zm2 2v3h3V2zm7-2h2v1h-2zm3 0h1v3h-1zm2 0h7v7h-7zm2 2v3h3V2zM0 9h1v1H0zm2 0h2v1H2zm4 0h3v1H6zm10 0h1v1h-1zm2 0h3v1h-3zm4 0h1v1h-1zM9 10h1v2H9zm4 0h2v1h-2zm7 0h2v1h-2zm-9 1h1v1h-1zm3 0h3v1h-3zm-9 2h7v7H0zm2 2v3h3v-3zm10-2h1v1h-1zm2 0h2v2h-2zm3 0h2v1h-2zm-7 2h1v1h-1zm3 0h1v2h-1zm3 0h1v1h-1zm-6 1h2v1h-2zm4 0h1v1h-1zm3 0h2v2h-2zm-4 1h3v1h-3zm-9 2h1v1h-1zm3 0h2v1h-2zm5 0h1v2h-1zm3 0h2v1h-2zm-9 1h1v1h-1zm3 0h1v1h-1zm5 0h1v1h-1zm2 0h2v1h-2z"
-          />
-        </svg>
+    <div className="my-3 inline-flex flex-col items-center rounded-2xl border border-red-500/30 bg-black/90 p-4 text-center font-mono shadow-xl transition-all hover:border-red-500/60">
+      <div className="mb-2 text-xs font-bold text-red-400 tracking-wider flex items-center gap-1.5">
+        <QrCode size={14} className="text-red-400" />
+        <span>SCANNABLE QR CODE: {(text || 'LINK').toUpperCase()}</span>
       </div>
+      
+      <div className="relative bg-white p-3 rounded-xl shadow-lg border border-slate-200 group min-w-[160px] min-h-[160px] flex items-center justify-center">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white rounded-xl text-xs text-slate-500 font-sans">
+            Generating QR...
+          </div>
+        )}
+        <img
+          src={imgSrc}
+          alt={`Original QR Code for ${text || 'link'}`}
+          className="w-40 h-40 object-contain rounded transition-transform group-hover:scale-105"
+          onLoad={() => setLoading(false)}
+          onError={() => {
+            if (imgSrc !== fallbackQrUrl) {
+              setImgSrc(fallbackQrUrl)
+            } else {
+              setLoading(false)
+            }
+          }}
+        />
+      </div>
+
+      <div className="mt-2.5 text-[11px] text-slate-400 max-w-[220px]">
+        Scan with your phone camera
+      </div>
+
       <a
-        href={url}
+        href={targetUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 inline-flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 underline"
+        className="mt-2 inline-flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 underline font-medium"
       >
-        <span>{url}</span>
+        <span className="max-w-[200px] truncate">{targetUrl}</span>
         <ExternalLink size={12} />
       </a>
     </div>

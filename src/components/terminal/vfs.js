@@ -80,16 +80,23 @@ class VirtualFileSystem {
 
   resolvePath(targetPath) {
     if (!targetPath || targetPath === '.') return this.currentPath
-    if (targetPath === '..') {
-      if (this.currentPath === '/') return '/'
-      const parts = this.currentPath.split('/').filter(Boolean)
-      parts.pop()
-      return parts.length === 0 ? '/' : '/' + parts.join('/')
+    if (targetPath === '~') return '/home/arun'
+
+    let absolute = targetPath.startsWith('/')
+      ? targetPath
+      : (this.currentPath === '/' ? '/' : this.currentPath + '/') + targetPath
+
+    const parts = absolute.split('/').filter(Boolean)
+    const stack = []
+    for (const p of parts) {
+      if (p === '.') continue
+      if (p === '..') {
+        if (stack.length > 0) stack.pop()
+      } else {
+        stack.push(p)
+      }
     }
-    if (targetPath.startsWith('/')) {
-      return targetPath.replace(/\/$/, '') || '/'
-    }
-    return (this.currentPath === '/' ? '/' : this.currentPath + '/') + targetPath.replace(/\/$/, '')
+    return '/' + stack.join('/')
   }
 
   getPwd() {
@@ -197,6 +204,189 @@ class VirtualFileSystem {
     delete this.fs[resolved]
     this.saveFS()
     return { success: true, message: `Removed: ${targetName}` }
+  }
+
+  cp(srcPath, dstPath) {
+    if (!srcPath || !dstPath) return { success: false, error: 'cp: missing file operand' }
+    const resolvedSrc = this.resolvePath(srcPath)
+    const srcNode = this.fs[resolvedSrc]
+    if (!srcNode) return { success: false, error: `cp: cannot stat '${srcPath}': No such file or directory` }
+
+    let resolvedDst = this.resolvePath(dstPath)
+    const dstNode = this.fs[resolvedDst]
+    if (dstNode && dstNode.type === 'dir') {
+      const srcBase = resolvedSrc.split('/').pop()
+      resolvedDst = (resolvedDst === '/' ? '/' : resolvedDst + '/') + srcBase
+    }
+
+    if (srcNode.type === 'dir') {
+      const copyDir = (fromPath, toPath) => {
+        const sourceDirNode = this.fs[fromPath]
+        this.fs[toPath] = { type: 'dir', children: [...(sourceDirNode.children || [])] }
+        ;(sourceDirNode.children || []).forEach((child) => {
+          const cFrom = (fromPath === '/' ? '/' : fromPath + '/') + child
+          const cTo = (toPath === '/' ? '/' : toPath + '/') + child
+          if (this.fs[cFrom]?.type === 'dir') {
+            copyDir(cFrom, cTo)
+          } else if (this.fs[cFrom]) {
+            this.fs[cTo] = { ...this.fs[cFrom] }
+          }
+        })
+      }
+      copyDir(resolvedSrc, resolvedDst)
+    } else {
+      this.fs[resolvedDst] = { ...srcNode }
+    }
+
+    const parentPath = this.resolvePath(resolvedDst + '/..')
+    const parentNode = this.fs[parentPath]
+    const dstBase = resolvedDst.split('/').pop()
+    if (parentNode && parentNode.children && !parentNode.children.includes(dstBase)) {
+      parentNode.children.push(dstBase)
+    }
+
+    this.saveFS()
+    return { success: true, message: `Copied '${srcPath}' to '${dstPath}'` }
+  }
+
+  mv(srcPath, dstPath) {
+    if (!srcPath || !dstPath) return { success: false, error: 'mv: missing file operand' }
+    const copyRes = this.cp(srcPath, dstPath)
+    if (!copyRes.success) return copyRes
+    this.rm(srcPath)
+    return { success: true, message: `'${srcPath}' -> '${dstPath}'` }
+  }
+
+  rmdir(dirName) {
+    if (!dirName) return { success: false, error: 'rmdir: missing operand' }
+    const resolved = this.resolvePath(dirName)
+    const node = this.fs[resolved]
+    if (!node) return { success: false, error: `rmdir: failed to remove '${dirName}': No such file or directory` }
+    if (node.type !== 'dir') return { success: false, error: `rmdir: failed to remove '${dirName}': Not a directory` }
+    if (node.children && node.children.length > 0) return { success: false, error: `rmdir: failed to remove '${dirName}': Directory not empty` }
+
+    return this.rm(dirName)
+  }
+
+  chmod(mode, targetPath) {
+    if (!mode || !targetPath) return { success: false, error: 'chmod: missing operand' }
+    const resolved = this.resolvePath(targetPath)
+    const node = this.fs[resolved]
+    if (!node) return { success: false, error: `chmod: cannot access '${targetPath}': No such file or directory` }
+    node.mode = mode
+    this.saveFS()
+    return { success: true, message: `mode of '${targetPath}' changed to ${mode}` }
+  }
+
+  chown(owner, targetPath) {
+    if (!owner || !targetPath) return { success: false, error: 'chown: missing operand' }
+    const resolved = this.resolvePath(targetPath)
+    const node = this.fs[resolved]
+    if (!node) return { success: false, error: `chown: cannot access '${targetPath}': No such file or directory` }
+    node.owner = owner
+    this.saveFS()
+    return { success: true, message: `changed ownership of '${targetPath}' to ${owner}` }
+  }
+
+  writeFile(fileName, content) {
+    if (!fileName) return { success: false, error: 'writeFile: missing file operand' }
+    const resolved = this.resolvePath(fileName)
+    const parentPath = this.resolvePath(fileName + '/..')
+    const parentNode = this.fs[parentPath]
+    if (!parentNode || parentNode.type !== 'dir') {
+      return { success: false, error: `writeFile: cannot create '${fileName}': No such file or directory` }
+    }
+
+    const baseName = resolved.split('/').pop()
+    this.fs[resolved] = { type: 'file', content }
+    if (!parentNode.children.includes(baseName)) {
+      parentNode.children.push(baseName)
+    }
+
+    this.saveFS()
+    return { success: true, message: `Wrote to '${fileName}'` }
+  }
+
+  grep(pattern, targetPath, options = {}) {
+    if (!pattern) return { success: false, error: 'grep: missing pattern' }
+    const caseInsensitive = options.i || false
+    const searchPath = targetPath ? this.resolvePath(targetPath) : this.currentPath
+    const node = this.fs[searchPath]
+    if (!node) return { success: false, error: `grep: ${targetPath}: No such file or directory` }
+
+    const results = []
+    const flags = caseInsensitive ? 'gi' : 'g'
+    let regex
+    try {
+      regex = new RegExp(pattern, flags)
+    } catch {
+      regex = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags)
+    }
+
+    const searchFile = (filePath, displayPath) => {
+      const fileNode = this.fs[filePath]
+      if (fileNode && fileNode.type === 'file' && typeof fileNode.content === 'string') {
+        const lines = fileNode.content.split('\n')
+        lines.forEach((line, idx) => {
+          regex.lastIndex = 0
+          if (regex.test(line)) {
+            results.push(`${displayPath}:${idx + 1}:${line}`)
+          }
+        })
+      }
+    }
+
+    if (node.type === 'file') {
+      searchFile(searchPath, targetPath || searchPath.split('/').pop())
+    } else {
+      const walk = (dirPath, prefixPath) => {
+        const dirNode = this.fs[dirPath]
+        if (!dirNode || !dirNode.children) return
+        dirNode.children.forEach((child) => {
+          const childFullPath = (dirPath === '/' ? '/' : dirPath + '/') + child
+          const childDisplay = (prefixPath ? prefixPath + '/' : '') + child
+          const childNode = this.fs[childFullPath]
+          if (childNode?.type === 'dir') {
+            walk(childFullPath, childDisplay)
+          } else if (childNode?.type === 'file') {
+            searchFile(childFullPath, childDisplay)
+          }
+        })
+      }
+      walk(searchPath, searchPath.split('/').pop())
+    }
+
+    return { success: true, results }
+  }
+
+  find(startPath = this.currentPath, namePattern = '*') {
+    const resolvedStart = this.resolvePath(startPath)
+    const startNode = this.fs[resolvedStart]
+    if (!startNode) return { success: false, error: `find: '${startPath}': No such file or directory` }
+
+    const results = [resolvedStart]
+    const globToRegex = (pat) => new RegExp('^' + pat.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.') + '$', 'i')
+    const regex = namePattern === '*' ? null : globToRegex(namePattern)
+
+    const walk = (dirPath) => {
+      const node = this.fs[dirPath]
+      if (!node || !node.children) return
+      node.children.forEach((child) => {
+        const childPath = (dirPath === '/' ? '/' : dirPath + '/') + child
+        if (!regex || regex.test(child)) {
+          results.push(childPath)
+        }
+        if (this.fs[childPath]?.type === 'dir') {
+          walk(childPath)
+        }
+      })
+    }
+
+    if (startNode.type === 'dir') {
+      walk(resolvedStart)
+    }
+
+    return { success: true, results }
   }
 
   tree(startPath = this.currentPath, depth = 0, prefix = '') {

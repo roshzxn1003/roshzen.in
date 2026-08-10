@@ -9,13 +9,13 @@ const ScrollIndicator = () => {
   });
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-1 z-[9999] pointer-events-none">
+    <div className="fixed top-0 left-0 right-0 h-[2px] z-[9999] pointer-events-none">
       <motion.div
-        className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-r-full"
+        className="h-full bg-gradient-to-r from-red-500 via-red-600 to-red-700 rounded-r-full"
         style={{
           scaleX,
           transformOrigin: "0%",
-          boxShadow: "0 0 10px rgba(56, 189, 248, 0.6), 0 0 20px rgba(168, 85, 247, 0.4)",
+          boxShadow: "0 0 8px rgba(239, 68, 68, 0.6), 0 0 16px rgba(220, 38, 38, 0.4)",
         }}
       />
     </div>

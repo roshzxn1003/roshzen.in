@@ -24,8 +24,11 @@ const renderComponent = (compKey) => {
     return <FakeHacker target={target} />
   }
   if (compKey.startsWith('qr:')) {
-    const parts = compKey.split(':')
-    return <QrCodeGenerator text={parts[1]} url={parts[2]} />
+    const firstColon = compKey.indexOf(':')
+    const secondColon = compKey.indexOf(':', firstColon + 1)
+    const text = compKey.substring(firstColon + 1, secondColon)
+    const url = compKey.substring(secondColon + 1)
+    return <QrCodeGenerator text={text} url={url} />
   }
   if (compKey.startsWith('game:')) {
     const game = compKey.split(':')[1]

@@ -6,6 +6,7 @@ function SectionHeader({ eyebrow, title, text }) {
       <p className="mb-3 font-mono text-sm font-semibold uppercase tracking-[0.18em] text-red-300">
         {eyebrow}
       </p>
+      <div className="mx-auto mb-5 h-px w-12 bg-gradient-to-r from-transparent via-red-500 to-transparent" />
       <h2 className="text-3xl font-black leading-tight text-white md:text-5xl">{title}</h2>
       {text && <p className="mt-5 text-base leading-8 text-slate-300 md:text-lg">{text}</p>}
     </Reveal>

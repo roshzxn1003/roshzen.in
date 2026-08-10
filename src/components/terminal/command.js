@@ -1,6 +1,6 @@
-import { projects, socialLinks } from '../../data/portfolio'
-import { themeNames } from './theme'
-import { vfs } from './vfs'
+import { projects, socialLinks } from '../../data/portfolio.js'
+import { themeNames } from './theme.js'
+import { vfs } from './vfs.js'
 
 const profile = {
   name: 'Arun Roshan',
@@ -9,7 +9,9 @@ const profile = {
   email: 'arunroshan1003@gmail.com',
   github: 'https://github.com/roshzxn1003',
   linkedin: 'https://www.linkedin.com/in/arun-roshan-gj/',
-  portfolio: 'RoshZen Portfolio',
+  instagram: 'https://instagram.com/rosh.zxn',
+  youtube: 'https://www.youtube.com/@roshzxn',
+  portfolio: 'https://roshzen.in',
   resume: '/AR-resume.pdf',
   about:
     'I am Arun Roshan, a Computer Science Engineering student focused on React, JavaScript, Python, Flutter, clean UI, and building high-performance modern web apps.',
@@ -37,6 +39,14 @@ const aliases = {
   mail: 'contact',
   certs: 'certificates',
   hacker: 'hack',
+  cmatrix: 'matrix',
+  sys: 'sysinfo',
+  ver: 'version',
+  demo: 'runall',
+  testall: 'runall',
+  batch: 'runall',
+  suite: 'runall',
+  'run-all': 'runall',
 }
 
 const jokes = [
@@ -45,6 +55,7 @@ const jokes = [
   'There are only 10 kinds of people: those who understand binary and those who do not.',
   'I told my code a joke. It did not compile.',
   'Software developer: An organism that turns caffeine into code.',
+  'Real programmers count from 0.',
 ]
 
 const quotes = [
@@ -59,12 +70,18 @@ const commandList = [
   'help', 'whoami', 'about', 'skills', 'skill', 'projects', 'project', 'search',
   'education', 'experience', 'contact', 'social', 'github', 'linkedin', 'resume',
   'clear', 'theme', 'cat', 'ls', 'pwd', 'mkdir', 'touch', 'rm', 'tree', 'cd',
-  'neofetch', 'coffee', 'joke', 'quote', 'matrix', 'stop', 'fullscreen', 'banner',
+  'head', 'tail', 'wc', 'grep', 'find', 'cp', 'mv', 'rmdir', 'chmod', 'chown',
+  'df', 'free', 'who', 'w', 'id', 'groups', 'alias', 'export', 'printenv', 'env',
+  'basename', 'dirname', 'sort', 'uniq', 'tr', 'tee', 'diff', 'nslookup', 'dig', 'host',
+  'traceroute', 'netstat', 'ss', 'sleep', 'which', 'whereis', 'man', 'sed', 'awk',
+  'neofetch', 'coffee', 'joke', 'quote', 'matrix', 'cmatrix', 'stop', 'fullscreen', 'banner',
   'welcome', 'portfolio', 'status', 'visitors', 'github stats', 'ask', 'roadmap',
-  'timeline', 'certificates', 'clock', 'timer', 'weather', 'music', 'sudo', 'hack',
-  'snake', 'pong', 'tictactoe', '2048', 'npm', 'git', 'docker', 'top', 'ps', 'kill',
-  'ping', 'curl', 'history', 'download', 'qr', 'open', 'toast', 'sound', 'boot',
-  'stats', 'analytics', 'blogs', 'blog', 'devmode'
+  'timeline', 'certificates', 'clock', 'timer', 'weather', 'music', 'playlist', 'sudo', 'hack',
+  'snake', 'pong', 'tictactoe', '2048', 'games', 'play', 'npm', 'git', 'docker', 'top', 'ps', 'kill',
+  'ping', 'curl', 'wget', 'history', 'download', 'qr', 'open', 'toast', 'sound', 'boot',
+  'stats', 'analytics', 'blogs', 'blog', 'devmode', 'uptime', 'date', 'time', 'uname',
+  'sysinfo', 'calc', 'echo', 'whois', 'hire', 'freelance', 'credits', 'thanks', 'motd', 'version',
+  'ifconfig', 'ip', 'hostname', 'disk', 'memory', 'runall', 'demo', 'testall', 'batch', 'suite'
 ]
 
 const makeOutput = (type, lines) => ({ type, lines: Array.isArray(lines) ? lines : [lines] })
@@ -122,7 +139,7 @@ export const getDynamicSuggestions = (rawInput) => {
     return matches.map((s) => `skill ${s}`)
   }
 
-  if (cmd === 'cat' || cmd === 'open' || cmd === 'cd' || cmd === 'rm') {
+  if (['cat', 'open', 'cd', 'rm', 'head', 'tail', 'wc', 'grep', 'cp', 'mv', 'rmdir', 'chmod', 'chown', 'sort', 'uniq', 'diff', 'man'].includes(cmd)) {
     const files = (vfs.ls().files || []).map((f) => f.replace(/\/$/, ''))
     const matches = files.filter((f) => f.toLowerCase().startsWith(argTyped))
     return matches.map((f) => `${cmd} ${f}`)
@@ -141,7 +158,7 @@ export const getDynamicSuggestions = (rawInput) => {
   }
 
   if (cmd === 'qr') {
-    const targets = ['github', 'linkedin', 'website']
+    const targets = ['website', 'portfolio', 'github', 'linkedin', 'instagram', 'youtube', 'email', 'whatsapp', 'resume', 'list']
     const matches = targets.filter((t) => t.startsWith(argTyped))
     return matches.map((t) => `qr ${t}`)
   }
@@ -256,7 +273,7 @@ export const executeCommand = (rawCommand, context = {}) => {
         `🛠 Tech Stack: ${found.tech.join(', ')}`,
         `⚡ Status: Completed / Live`,
         `🔗 GitHub: ${profile.github}`,
-        `🚀 Live Demo: https://${found.title.toLowerCase().replace(/\s+/g, '')}.roshzen.dev`,
+        `🚀 Live Demo: ${found.live || 'https://roshzen.in'}`,
       ]),
     ]
   }
@@ -506,7 +523,409 @@ export const executeCommand = (rawCommand, context = {}) => {
     ]
   }
 
-  // 20. LINUX COMMANDS (Requirement #28)
+  // 20. LINUX COMMANDS & SYSTEM UTILITIES
+  if (command === 'head') {
+    let count = 10
+    let fileArg = args[0]
+    if (args[0] === '-n' && args[1]) {
+      count = parseInt(args[1], 10) || 10
+      fileArg = args[2]
+    } else if (args[0] && args[0].startsWith('-n')) {
+      count = parseInt(args[0].slice(2), 10) || 10
+      fileArg = args[1]
+    }
+    if (!fileArg) return [makeOutput('error', 'Usage: head [-n lines] <filename>')]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const lines = res.content.split('\n').slice(0, count)
+    return [makeOutput('output', lines)]
+  }
+
+  if (command === 'tail') {
+    let count = 10
+    let fileArg = args[0]
+    if (args[0] === '-n' && args[1]) {
+      count = parseInt(args[1], 10) || 10
+      fileArg = args[2]
+    } else if (args[0] && args[0].startsWith('-n')) {
+      count = parseInt(args[0].slice(2), 10) || 10
+      fileArg = args[1]
+    }
+    if (!fileArg) return [makeOutput('error', 'Usage: tail [-n lines] <filename>')]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const allLines = res.content.split('\n')
+    const lines = allLines.slice(Math.max(0, allLines.length - count))
+    return [makeOutput('output', lines)]
+  }
+
+  if (command === 'wc') {
+    const flag = args[0] && args[0].startsWith('-') ? args[0] : null
+    const fileArg = flag ? args[1] : args[0]
+    if (!fileArg) return [makeOutput('error', 'Usage: wc [-l|-w|-c] <filename>')]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const text = res.content
+    const lineCount = text ? text.split('\n').length : 0
+    const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0
+    const charCount = text.length
+    if (flag === '-l') return [makeOutput('output', `${lineCount} ${fileArg}`)]
+    if (flag === '-w') return [makeOutput('output', `${wordCount} ${fileArg}`)]
+    if (flag === '-c' || flag === '-m') return [makeOutput('output', `${charCount} ${fileArg}`)]
+    return [makeOutput('output', `  ${lineCount}  ${wordCount} ${charCount} ${fileArg}`)]
+  }
+
+  if (command === 'grep') {
+    let isCaseInsensitive = false
+    let pattern = ''
+    let targetFile = ''
+    let argIdx = 0
+    if (args[argIdx] === '-i') {
+      isCaseInsensitive = true
+      argIdx++
+    }
+    pattern = args[argIdx]
+    targetFile = args[argIdx + 1]
+    if (!pattern) return [makeOutput('error', 'Usage: grep [-i] <pattern> [file or directory]')]
+    const res = vfs.grep(pattern, targetFile, { i: isCaseInsensitive })
+    if (!res.success) return [makeOutput('error', res.error)]
+    if (res.results.length === 0) return [makeOutput('warning', `grep: pattern '${pattern}' not found`)]
+    return [makeOutput('output', res.results)]
+  }
+
+  if (command === 'find') {
+    let startPath = '.'
+    let namePattern = '*'
+    if (args[0] && !args[0].startsWith('-')) {
+      startPath = args[0]
+      if (args[1] === '-name' && args[2]) namePattern = args[2].replace(/^["']|["']$/g, '')
+    } else if (args[0] === '-name' && args[1]) {
+      namePattern = args[1].replace(/^["']|["']$/g, '')
+    }
+    const res = vfs.find(startPath, namePattern)
+    if (!res.success) return [makeOutput('error', res.error)]
+    return [makeOutput('output', res.results)]
+  }
+
+  if (command === 'cp') {
+    if (args.length < 2) return [makeOutput('error', 'Usage: cp <source> <destination>')]
+    const res = vfs.cp(args[0], args[1])
+    return res.success ? [makeOutput('success', res.message)] : [makeOutput('error', res.error)]
+  }
+
+  if (command === 'mv') {
+    if (args.length < 2) return [makeOutput('error', 'Usage: mv <source> <destination>')]
+    const res = vfs.mv(args[0], args[1])
+    return res.success ? [makeOutput('success', res.message)] : [makeOutput('error', res.error)]
+  }
+
+  if (command === 'rmdir') {
+    if (!args[0]) return [makeOutput('error', 'Usage: rmdir <directory>')]
+    const res = vfs.rmdir(args[0])
+    return res.success ? [makeOutput('success', res.message)] : [makeOutput('error', res.error)]
+  }
+
+  if (command === 'chmod') {
+    if (args.length < 2) return [makeOutput('error', 'Usage: chmod <mode> <filename>')]
+    const res = vfs.chmod(args[0], args[1])
+    return res.success ? [makeOutput('success', res.message)] : [makeOutput('error', res.error)]
+  }
+
+  if (command === 'chown') {
+    if (args.length < 2) return [makeOutput('error', 'Usage: chown <owner:group> <filename>')]
+    const res = vfs.chown(args[0], args[1])
+    return res.success ? [makeOutput('success', res.message)] : [makeOutput('error', res.error)]
+  }
+
+  if (command === 'df') {
+    return [
+      makeOutput('output', [
+        'Filesystem     1K-blocks      Used Available Use% Mounted on',
+        '/dev/root       52428800  14680064  37748736  28% /',
+        'devtmpfs         8192000         0   8192000   0% /dev',
+        'tmpfs            8192000       512   8191488   1% /run',
+        '/dev/nvme0n1p2 209715200  47185920 162529280  23% /home/arun',
+        'roshzen_vfs       102400     12480     89920  12% /home/arun/vfs',
+      ]),
+    ]
+  }
+
+  if (command === 'free') {
+    const isHuman = args.includes('-h')
+    if (isHuman) {
+      return [
+        makeOutput('output', [
+          '               total        used        free      shared  buff/cache   available',
+          'Mem:           15.7Gi       4.1Gi       8.0Gi       512Mi       3.6Gi      11.4Gi',
+          'Swap:           2.0Gi          0B       2.0Gi',
+        ]),
+      ]
+    }
+    return [
+      makeOutput('output', [
+        '               total        used        free      shared  buff/cache   available',
+        'Mem:        16465920     4300800     8388608      524288     3776512    11953728',
+        'Swap:        2097152           0     2097152',
+      ]),
+    ]
+  }
+
+  if (command === 'who' || command === 'w') {
+    return [
+      makeOutput('output', [
+        ' 23:25:00 up 42 days, 13:37,  2 users,  load average: 0.04, 0.01, 0.00',
+        'USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT',
+        'arun     tty1     :0               10Aug26 42days  0.12s  0.12s /bin/bash',
+        'arun     pts/0    192.168.1.100    23:15    0.00s  0.08s  0.02s bash -c terminal',
+      ]),
+    ]
+  }
+
+  if (command === 'id') {
+    const user = args[0] || 'arun'
+    return [
+      makeOutput(
+        'output',
+        `uid=1000(${user}) gid=1000(${user}) groups=1000(${user}),27(sudo),100(users),999(docker),1001(developer)`
+      ),
+    ]
+  }
+
+  if (command === 'groups') {
+    const user = args[0] || 'arun'
+    return [makeOutput('output', `${user} : ${user} sudo users docker developer webdev`)]
+  }
+
+  if (command === 'alias') {
+    const list = Object.entries(aliases).map(([k, v]) => `alias ${k}='${v}'`)
+    return [makeOutput('list', ['# Current RoshZen Shell Aliases', ...list])]
+  }
+
+  if (command === 'export' || command === 'printenv') {
+    const envVars = [
+      'USER=arun',
+      'LOGNAME=arun',
+      'HOME=/home/arun',
+      'SHELL=/bin/bash',
+      'TERM=xterm-256color',
+      'LANG=en_US.UTF-8',
+      'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      'NODE_ENV=production',
+      'ROSHZEN_OS=v4.2-cyberpunk',
+    ]
+    if (command === 'export' && args.length === 0) {
+      return [makeOutput('output', envVars.map((v) => `declare -x ${v}`))]
+    }
+    if (args[0]) {
+      const matched = envVars.find((v) => v.startsWith(args[0].toUpperCase() + '='))
+      if (matched) return [makeOutput('output', matched.split('=')[1])]
+    }
+    return [makeOutput('output', envVars)]
+  }
+
+  if (command === 'basename') {
+    if (!args[0]) return [makeOutput('error', 'Usage: basename <path> [suffix]')]
+    let base = args[0].replace(/\/+$/, '').split('/').pop() || '/'
+    if (args[1] && base.endsWith(args[1])) {
+      base = base.slice(0, base.length - args[1].length)
+    }
+    return [makeOutput('output', base)]
+  }
+
+  if (command === 'dirname') {
+    if (!args[0]) return [makeOutput('error', 'Usage: dirname <path>')]
+    const parts = args[0].replace(/\/+$/, '').split('/')
+    parts.pop()
+    const dir = parts.join('/') || '/'
+    return [makeOutput('output', dir)]
+  }
+
+  if (command === 'sort') {
+    const isReverse = args.includes('-r')
+    const fileArg = args.find((a) => !a.startsWith('-'))
+    if (!fileArg) return [makeOutput('error', 'Usage: sort [-r] <filename>')]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const sorted = res.content.split('\n').sort()
+    if (isReverse) sorted.reverse()
+    return [makeOutput('output', sorted)]
+  }
+
+  if (command === 'uniq') {
+    const fileArg = args[0]
+    if (!fileArg) return [makeOutput('error', 'Usage: uniq <filename>')]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const lines = res.content.split('\n')
+    const uniqueLines = lines.filter((line, i) => i === 0 || line !== lines[i - 1])
+    return [makeOutput('output', uniqueLines)]
+  }
+
+  if (command === 'tr') {
+    if (args.length < 2) return [makeOutput('error', "Usage: tr 'set1' 'set2' (e.g. tr 'a-z' 'A-Z')")]
+    const fromSet = args[0].replace(/['"]/g, '')
+    const toSet = args[1].replace(/['"]/g, '')
+    if (fromSet === 'a-z' && toSet === 'A-Z') {
+      const rest = args.slice(2).join(' ') || 'hello world from linux'
+      return [makeOutput('output', rest.toUpperCase())]
+    }
+    if (fromSet === 'A-Z' && toSet === 'a-z') {
+      const rest = args.slice(2).join(' ') || 'HELLO WORLD FROM LINUX'
+      return [makeOutput('output', rest.toLowerCase())]
+    }
+    return [makeOutput('output', (args.slice(2).join(' ') || fromSet).replace(new RegExp(fromSet, 'g'), toSet))]
+  }
+
+  if (command === 'tee') {
+    if (!args[0]) return [makeOutput('error', 'Usage: tee <filename>')]
+    const text = args.slice(1).join(' ') || 'RoshZen Linux Pipe Stream Output'
+    vfs.writeFile(args[0], text)
+    return [makeOutput('output', text)]
+  }
+
+  if (command === 'diff') {
+    if (args.length < 2) return [makeOutput('error', 'Usage: diff <file1> <file2>')]
+    const res1 = vfs.cat(args[0])
+    const res2 = vfs.cat(args[1])
+    if (!res1.success) return [makeOutput('error', res1.error)]
+    if (!res2.success) return [makeOutput('error', res2.error)]
+    const l1 = res1.content.split('\n')
+    const l2 = res2.content.split('\n')
+    const diffs = []
+    const maxLen = Math.max(l1.length, l2.length)
+    for (let i = 0; i < maxLen; i++) {
+      if (l1[i] !== l2[i]) {
+        if (l1[i] !== undefined) diffs.push(`< ${l1[i]}`)
+        if (l2[i] !== undefined) diffs.push(`> ${l2[i]}`)
+      }
+    }
+    if (diffs.length === 0) return [makeOutput('success', 'Files are identical.')]
+    return [makeOutput('output', diffs)]
+  }
+
+  if (command === 'nslookup' || command === 'dig' || command === 'host') {
+    const domain = args.find((a) => !a.startsWith('-')) || 'roshzen.in'
+    return [
+      makeOutput('output', [
+        `Server:         1.1.1.1`,
+        `Address:        1.1.1.1#53`,
+        ``,
+        `Non-authoritative answer:`,
+        `Name:   ${domain}`,
+        `Address: 76.76.21.21 (Vercel Edge Network)`,
+        `Address: 2604:a880:800:10::1`,
+        `MX record: 10 mail.gandi.net`,
+        `TXT record: "v=spf1 include:_spf.google.com ~all"`,
+      ]),
+    ]
+  }
+
+  if (command === 'traceroute') {
+    const target = args[0] || 'google.com'
+    return [
+      makeOutput('output', [
+        `traceroute to ${target} (142.250.190.46), 30 hops max, 60 byte packets`,
+        ` 1  gateway (192.168.1.1)  1.124 ms  1.085 ms  1.012 ms`,
+        ` 2  10.240.0.1 (10.240.0.1)  8.432 ms  8.112 ms  7.985 ms`,
+        ` 3  172.16.100.4 (172.16.100.4)  12.102 ms  11.890 ms  11.543 ms`,
+        ` 4  edge-router.net (142.250.190.46)  14.210 ms  13.980 ms  14.050 ms`,
+      ]),
+    ]
+  }
+
+  if (command === 'netstat' || command === 'ss') {
+    return [
+      makeOutput('output', [
+        'Active Internet connections (only servers)',
+        'Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name',
+        'tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN      101/node (vite)',
+        'tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      402/nginx',
+        'tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      512/sshd',
+        'tcp6       0      0 :::443                  :::*                    LISTEN      402/nginx',
+      ]),
+    ]
+  }
+
+  if (command === 'sleep') {
+    const sec = parseInt(args[0], 10) || 1
+    return [makeOutput('success', `Slept for ${sec} second(s).`)]
+  }
+
+  if (command === 'which' || command === 'whereis') {
+    const target = args[0] || 'bash'
+    const paths = {
+      bash: '/bin/bash',
+      sh: '/bin/sh',
+      node: '/usr/local/bin/node',
+      npm: '/usr/local/bin/npm',
+      git: '/usr/bin/git',
+      python: '/usr/bin/python3',
+      python3: '/usr/bin/python3',
+      docker: '/usr/bin/docker',
+      ls: '/bin/ls',
+      cat: '/bin/cat',
+      grep: '/usr/bin/grep',
+      find: '/usr/bin/find',
+      vim: '/usr/bin/vim',
+      nano: '/usr/bin/nano',
+    }
+    const found = paths[target.toLowerCase()]
+    if (found) return [makeOutput('output', found)]
+    return [makeOutput('output', `/usr/bin/${target}`)]
+  }
+
+  if (command === 'man') {
+    const cmd = args[0]?.toLowerCase()
+    if (!cmd) return [makeOutput('error', 'Usage: man <command_name> (e.g. man ls, man grep, man git)')]
+    return [
+      makeOutput('output', [
+        `NAME`,
+        `       ${cmd} - RoshZen Linux Command Documentation`,
+        ``,
+        `SYNOPSIS`,
+        `       ${cmd} [OPTION]... [FILE]...`,
+        ``,
+        `DESCRIPTION`,
+        `       Standard Linux command utility integrated within RoshZen Virtual OS v4.2.`,
+        `       Allows interactive file system manipulation and software engineering execution.`,
+        ``,
+        `EXAMPLES`,
+        `       ${cmd} --help`,
+        `       ${cmd} filename`,
+      ]),
+    ]
+  }
+
+  if (command === 'sed') {
+    if (!args[0]) return [makeOutput('error', "Usage: sed 's/find/replace/g' <filename>")]
+    const expr = args[0].replace(/^["']|["']$/g, '')
+    const fileArg = args[1]
+    const match = expr.match(/^s\/([^/]+)\/([^/]*)\/([g]?)$/)
+    if (!match) return [makeOutput('error', 'Invalid sed expression syntax. Example: sed s/foo/bar/g file.txt')]
+    const [, findStr, replaceStr, flags] = match
+    if (!fileArg) return [makeOutput('error', 'Usage: sed s/find/replace/g <filename>')]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const regex = new RegExp(findStr, flags.includes('g') ? 'g' : '')
+    const modified = res.content.replace(regex, replaceStr)
+    return [makeOutput('output', modified.split('\n'))]
+  }
+
+  if (command === 'awk') {
+    if (!args[0]) return [makeOutput('error', "Usage: awk '{print $1}' <filename>")]
+    const fileArg = args.find((a) => !a.startsWith('{') && !a.startsWith("'") && !a.startsWith('"'))
+    if (!fileArg) return [makeOutput('error', "Usage: awk '{print $1}' <filename>")]
+    const res = vfs.cat(fileArg)
+    if (!res.success) return [makeOutput('error', res.error)]
+    const colMatch = args.join(' ').match(/\$([0-9]+)/)
+    const colIdx = colMatch ? parseInt(colMatch[1], 10) - 1 : 0
+    const lines = res.content.split('\n').map((line) => {
+      const parts = line.trim().split(/\s+/)
+      return colIdx >= 0 ? parts[colIdx] || '' : line
+    })
+    return [makeOutput('output', lines)]
+  }
+
   if (['top', 'ps', 'kill', 'ping', 'curl', 'wget', 'history', 'env', 'hostname', 'uname', 'ifconfig', 'ip', 'disk', 'memory'].includes(command)) {
     if (command === 'top' || command === 'ps') {
       return [
@@ -519,6 +938,43 @@ export const executeCommand = (rawCommand, context = {}) => {
     }
     if (command === 'uname') {
       return [makeOutput('output', 'Linux RoshZen-OS 6.10.0-custom x86_64 GNU/Linux')]
+    }
+    if (command === 'hostname') {
+      return [makeOutput('output', 'roshzen-cyberpunk-linux')]
+    }
+    if (command === 'ifconfig' || command === 'ip') {
+      return [
+        makeOutput('output', [
+          'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500',
+          '        inet 192.168.1.105  netmask 255.255.255.0  broadcast 192.168.1.255',
+          '        inet6 fe80::a00:27ff:fe4e:66a1  prefixlen 64  scopeid 0x20<link>',
+          '        ether 08:00:27:4e:66:a1  txqueuelen 1000  (Ethernet)',
+          '        RX packets 14205  bytes 18450122 (18.4 MB)',
+          '        TX packets 9820  bytes 2450110 (2.4 MB)',
+          '',
+          'lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536',
+          '        inet 127.0.0.1  netmask 255.0.0.0',
+        ]),
+      ]
+    }
+    if (command === 'disk' || command === 'memory') {
+      return command === 'disk'
+        ? [makeOutput('output', 'Disk Usage: 47.1 GB used / 209.7 GB total (23% used)')]
+        : [makeOutput('output', 'Memory Usage: 4.1 GB used / 16.0 GB RAM total (26% used)')]
+    }
+    if (command === 'curl' || command === 'wget') {
+      const url = args[0] || 'https://roshzen.in'
+      return [
+        makeOutput('output', [
+          `HTTP/1.1 200 OK`,
+          `Content-Type: text/html; charset=UTF-8`,
+          `Server: RoshZen-Vercel-Edge`,
+          `Date: ${new Date().toUTCString()}`,
+          `Connection: keep-alive`,
+          ``,
+          `<!DOCTYPE html><html><head><title>RoshZen Portfolio</title></head><body><h1>Welcome to RoshZen</h1></body></html>`,
+        ]),
+      ]
     }
     if (command === 'ping') {
       return [makeOutput('output', 'PING google.com (142.250.190.46): 56 data bytes\n64 bytes from 142.250.190.46: icmp_seq=0 ttl=118 time=14.2 ms')]
@@ -552,13 +1008,67 @@ export const executeCommand = (rawCommand, context = {}) => {
     return [makeOutput('error', 'Usage: download resume, download portfolio, download certificates, download projects')]
   }
 
-  // 22. QR CODE GENERATOR (Requirement #30)
+  // 22. QR CODE GENERATOR (ALL SOCIAL MEDIA & CUSTOM LINKS)
   if (command === 'qr') {
-    const target = args[0]?.toLowerCase() || 'website'
-    let url = profile.github
-    if (target === 'linkedin') url = profile.linkedin
-    if (target === 'website' || target === 'portfolio') url = 'https://roshzen.dev'
-    return [makeOutput('component', `qr:${target}:${url}`)]
+    const rawTarget = args[0] || 'website'
+    const target = rawTarget.toLowerCase()
+
+    if (target === 'list' || target === 'all' || target === 'help') {
+      return [
+        makeOutput('output', [
+          '📱 ROSHZEN SOCIAL MEDIA QR CODE REGISTRY',
+          '-------------------------------------------------------',
+          '• qr website   / qr portfolio  → Portfolio Website (https://roshzen.in)',
+          '• qr github    / qr gh         → GitHub Profile (github.com/roshzxn1003)',
+          '• qr linkedin  / qr li         → LinkedIn Profile (linkedin.com/in/arun-roshan-gj)',
+          '• qr instagram / qr ig         → Instagram Profile (instagram.com/rosh.zxn)',
+          '• qr youtube   / qr yt         → YouTube Channel (youtube.com/@roshzxn)',
+          '• qr email     / qr mail       → Email Contact (arunroshan1003@gmail.com)',
+          '• qr whatsapp  / qr wa         → WhatsApp Contact (+91 9999999999)',
+          '• qr resume    / qr cv         → Download Resume PDF',
+          '• qr <custom_url>             → Any Custom Link (e.g. qr https://x.com/roshzxn)',
+          '-------------------------------------------------------',
+          'Type any command above to generate its original scannable QR Code!',
+        ]),
+      ]
+    }
+
+    let url = 'https://roshzen.in'
+    let label = target
+
+    if (target === 'website' || target === 'portfolio' || target === 'site') {
+      url = 'https://roshzen.in'
+      label = 'Portfolio Website'
+    } else if (target === 'github' || target === 'gh') {
+      url = profile.github
+      label = 'GitHub Profile'
+    } else if (target === 'linkedin' || target === 'li') {
+      url = profile.linkedin
+      label = 'LinkedIn Profile'
+    } else if (target === 'instagram' || target === 'ig') {
+      url = 'https://instagram.com/rosh.zxn'
+      label = 'Instagram Profile'
+    } else if (target === 'youtube' || target === 'yt') {
+      url = 'https://www.youtube.com/@roshzxn'
+      label = 'YouTube Channel'
+    } else if (target === 'email' || target === 'mail' || target === 'contact') {
+      url = 'mailto:arunroshan1003@gmail.com'
+      label = 'Email Contact'
+    } else if (target === 'whatsapp' || target === 'wa') {
+      url = 'https://wa.me/919999999999'
+      label = 'WhatsApp Contact'
+    } else if (target === 'resume' || target === 'cv') {
+      url = 'https://roshzen.in/AR-resume.pdf'
+      label = 'Resume PDF'
+    } else if (rawTarget.startsWith('http://') || rawTarget.startsWith('https://')) {
+      url = rawTarget
+      label = 'Custom Link'
+    } else {
+      url = 'https://roshzen.in'
+      label = `Portfolio`
+    }
+
+    return [makeOutput('component', `qr:${label}:${url}`)]
   }
 
   // 23. TOAST NOTIFICATION (Requirement #32)
@@ -699,6 +1209,170 @@ export const executeCommand = (rawCommand, context = {}) => {
     return res.success ? [makeOutput('success', res.message)] : [makeOutput('error', res.error)]
   }
 
+  // 31b. ADDITIONAL NEW COMMAND HANDLERS
+  if (command === 'uptime') {
+    return [
+      makeOutput('success', [
+        '⏱ ROSHZEN SYSTEM UPTIME',
+        '-------------------------------------------------------',
+        'Uptime       : 42 days, 13 hours, 37 minutes',
+        'System Load  : 0.04 (1m), 0.01 (5m), 0.00 (15m)',
+        'Status       : 100% Operational (0 downtime reported)',
+      ]),
+    ]
+  }
+
+  if (command === 'date' || command === 'time' || command === 'clock') {
+    const now = new Date()
+    return [
+      makeOutput('output', [
+        `🕒 Current Time : ${now.toLocaleTimeString()}`,
+        `📅 Current Date : ${now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
+        `🌐 Timezone     : ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
+      ]),
+    ]
+  }
+
+  if (command === 'uname' || command === 'sysinfo' || command === 'systeminfo') {
+    return [
+      makeOutput('output', [
+        '🖥 ROSHZEN OS SPECIFICATIONS',
+        '-------------------------------------------------------',
+        'OS Name      : RoshZen Linux (Cyberpunk Edition)',
+        'Kernel       : 6.8.0-roshzen-x86_64',
+        'Architecture : x86_64 / ARM64 Compatible',
+        'Shell        : RoshZen Interactive Terminal v4.2',
+        'Runtime      : WebAssembly / React 19 Engine',
+      ]),
+    ]
+  }
+
+  if (command === 'calc' || command === 'eval') {
+    const expr = args.join(' ')
+    if (!expr) return [makeOutput('error', 'Usage: calc <expression> (e.g. calc 15 * 4, calc Math.sqrt(144))')]
+    try {
+      const sanitized = expr.replace(/[^0-9+\-*/().%\s^sqrtcointlogpabs]/gi, '')
+      const evaluated = Function(`return (${sanitized.replace(/sqrt/g, 'Math.sqrt')})`)()
+      return [makeOutput('success', `Result: ${evaluated}`)]
+    } catch {
+      return [makeOutput('error', `Invalid calculation expression: "${expr}"`)]
+    }
+  }
+
+  if (command === 'echo') {
+    return [makeOutput('output', args.join(' ') || '')]
+  }
+
+  if (command === 'whois') {
+    const query = args[0] || 'arun'
+    return [
+      makeOutput('output', [
+        '🔍 WHOIS RECORD FOR: ' + query.toUpperCase(),
+        '-------------------------------------------------------',
+        'Registrant   : Arun Roshan (RoshZen)',
+        'Role         : Computer Science Engineering Student & Developer',
+        'Location     : India',
+        'Domain       : roshzen.in / roshzens-portfolio.vercel.app',
+        'Status       : Available for Freelance & Full-Time Hire',
+        'Contact      : arunroshan1003@gmail.com',
+      ]),
+    ]
+  }
+
+  if (command === 'hire' || command === 'freelance') {
+    scrollToSection('contact')
+    return [
+      makeOutput('success', [
+        '🚀 HIRE ARUN ROSHAN',
+        '-------------------------------------------------------',
+        'Status       : 🟢 OPEN FOR OPPORTUNITIES',
+        'Services     : React Web Apps, Mobile UI, Portfolio Design, Frontend Development',
+        'Email        : arunroshan1003@gmail.com',
+        'GitHub       : https://github.com/roshzxn1003',
+        'LinkedIn     : https://www.linkedin.com/in/arun-roshan-gj/',
+        'Action       : Scrolling to contact section...',
+      ]),
+    ]
+  }
+
+  if (command === 'music' || command === 'playlist') {
+    return [
+      makeOutput('output', [
+        '🎵 ROSHZEN VIBE CODING PLAYLIST',
+        '-------------------------------------------------------',
+        'Current Track : Synthwave / Lo-Fi Beats for Coding 🎧',
+        'Genre         : Cyberpunk Synthwave & Chillhop',
+        'Favorite      : Midnight City - M83',
+        'Status        : 🟢 Playing in high-focus mode',
+      ]),
+    ]
+  }
+
+  if (command === 'games' || command === 'play') {
+    return [
+      makeOutput('output', [
+        '🎮 TERMINAL MINI GAMES',
+        '-------------------------------------------------------',
+        '• snake     - Classic Snake Arcade Game',
+        '• pong      - Retro Pong VS AI',
+        '• tictactoe - Tic-Tac-Toe Game',
+        '• 2048      - 2048 Puzzle Game',
+        '• hack      - Hacking Simulation',
+        '-------------------------------------------------------',
+        'Type any game name to launch it right inside the terminal!',
+      ]),
+    ]
+  }
+
+  if (command === 'ping') {
+    const host = args[0] || 'roshzen.in'
+    return [
+      makeOutput('success', [
+        `PING ${host} 56(84) bytes of data.`,
+        `64 bytes from ${host}: icmp_seq=1 ttl=64 time=12.4 ms`,
+        `64 bytes from ${host}: icmp_seq=2 ttl=64 time=11.8 ms`,
+        `64 bytes from ${host}: icmp_seq=3 ttl=64 time=12.1 ms`,
+        `--- ${host} ping statistics ---`,
+        `3 packets transmitted, 3 received, 0% packet loss, time 2003ms`,
+      ]),
+    ]
+  }
+
+  if (command === 'credits' || command === 'thanks') {
+    return [
+      makeOutput('output', [
+        '⭐ PORTFOLIO CREDITS & ACKNOWLEDGMENTS',
+        '-------------------------------------------------------',
+        'Developer    : Arun Roshan (RoshZen)',
+        'Core Tech    : React 19, Vite, Tailwind CSS v4, Motion (Framer)',
+        'Icons        : Lucide React',
+        'Shaders/3D   : WebGL 2 / OGL Engine',
+        'Special      : Built with passion & clean software architecture.',
+      ]),
+    ]
+  }
+
+  if (command === 'motd') {
+    return [
+      makeOutput('success', [
+        '💬 MESSAGE OF THE DAY',
+        '-------------------------------------------------------',
+        '“The best way to predict the future is to invent it.” — Alan Kay',
+      ]),
+    ]
+  }
+
+  if (command === 'version') {
+    return [
+      makeOutput('output', [
+        '📌 ROSHZEN TERMINAL VERSION INFO',
+        '-------------------------------------------------------',
+        'Terminal Version : v4.2.0-pro (Build 2026)',
+        'Features         : Interactive Games, WebGL Shaders, 50+ Commands',
+      ]),
+    ]
+  }
+
   if (command === 'tree') {
     const lines = vfs.tree()
     return [makeOutput('output', lines)]
@@ -722,19 +1396,104 @@ export const executeCommand = (rawCommand, context = {}) => {
     return [makeOutput('error', res.error || `cat: ${fileName}: No such file`)]
   }
 
-  // 32. PRESERVED ORIGINAL COMMANDS
+  // 33. RUNALL / BATCH EXECUTION SUITE
+  if (command === 'runall' || command === 'demo' || command === 'testall' || command === 'batch' || command === 'suite') {
+    const suite = [
+      'whoami',
+      'about',
+      'skills',
+      'projects',
+      'education',
+      'experience',
+      'contact',
+      'certs',
+      'status',
+      'visitors',
+      'github stats',
+      'stats',
+      'roadmap',
+      'timeline',
+      'pwd',
+      'ls',
+      'tree',
+      'cat about.txt',
+      'head -n 2 skills.json',
+      'tail -n 2 README.md',
+      'wc -l about.txt',
+      'grep -i react skills.json',
+      'find . -name *.md',
+      'df',
+      'free -h',
+      'who',
+      'id',
+      'groups',
+      'alias',
+      'export',
+      'basename /home/arun/about.txt',
+      'dirname /home/arun/about.txt',
+      'top',
+      'ping roshzen.in',
+      'curl https://roshzen.in',
+      'uname',
+      'sysinfo',
+      'uptime',
+      'calc 25 * 4',
+      'weather',
+      'music',
+      'qr list',
+      'neofetch',
+      'coffee',
+      'joke',
+      'quote',
+      'motd',
+      'version',
+    ]
+
+    const resultOutputs = [
+      makeOutput('success', [
+        '⚡ ROSHZEN TERMINAL BATCH EXECUTION SUITE (RUNALL)',
+        `Running all ${suite.length} terminal commands in 1 automated sequence...`,
+        '----------------------------------------------------------------------',
+      ]),
+    ]
+
+    suite.forEach((cmdItem, index) => {
+      resultOutputs.push(makeOutput('output', `[${index + 1}/${suite.length}] $ ${cmdItem}`))
+      if (cmdItem !== 'runall' && cmdItem !== 'demo') {
+        const cmdRes = executeCommand(cmdItem, context)
+        cmdRes.forEach((res) => {
+          resultOutputs.push(res)
+        })
+      }
+    })
+
+    resultOutputs.push(
+      makeOutput('success', [
+        '----------------------------------------------------------------------',
+        `✨ ALL DONE: All ${suite.length} commands executed successfully in 1 automated sequence!`,
+      ])
+    )
+
+    return resultOutputs
+  }
+
+  // 34. PRESERVED ORIGINAL COMMANDS
   switch (normalized) {
     case 'help':
       return [
         makeOutput('output', [
-          '⚡ ROSHZEN TERMINAL COMMAND REGISTRY (40+ Commands)',
+          '⚡ ROSHZEN TERMINAL COMMAND REGISTRY (80+ Commands)',
           '-------------------------------------------------------',
-          '• Portfolio : whoami | about | skills | skill react | projects | project 1 | search react',
-          '• Info      : education | experience | contact | social | github | linkedin | resume | certs',
+          '• Portfolio : whoami | about | skills | skill <name> | projects | project <1-6> | search <topic>',
+          '• Info      : education | experience | contact | social | github | linkedin | resume | certs | hire | whois',
           '• Analytics : status | visitors | github stats | stats | analytics | devmode | roadmap | timeline',
-          '• System    : theme <name> | sound on/off | clear | pwd | ls | cd | mkdir | touch | rm | tree | cat',
-          '• Tools     : ask "question" | clock | timer | weather | music | npm | git | docker | top | download',
-          '• Fun/Games : neofetch | coffee | joke | quote | matrix | stop | hack | snake | tictactoe | 2048 | 42',
+          '• VFS Files : pwd | ls | cd | mkdir | touch | rm | rmdir | cp | mv | tree | cat | head | tail | wc | grep | find | chmod | chown',
+          '• Linux CLI : top | ps | kill | df | free | who | w | id | groups | alias | export | printenv | env | diff | sort | uniq | tr | tee | sed | awk | man | which | whereis',
+          '• Network   : ping | curl | wget | nslookup | dig | host | traceroute | netstat | ss | ifconfig | ip | hostname',
+          '• System    : theme <name> | sound on/off | clear | uptime | date | time | uname | sysinfo | calc | echo | version | boot',
+          '• Automated : runall | demo | testall | batch (Run all 40+ commands at once in 1 sequence!)',
+          '• Dev Tools : npm | git | docker | qr | download | toast | music | playlist | weather | ask',
+          '• Fun/Games : neofetch | coffee | joke | quote | motd | matrix | cmatrix | stop | hack | games | snake | pong | tictactoe | 2048 | 42',
         ]),
       ]
 

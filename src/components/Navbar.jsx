@@ -47,9 +47,9 @@ function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className={`rounded-full px-4 py-2 text-sm transition ${
+                className={`rounded-full px-4 py-2 text-sm transition duration-300 ${
                   isActive
-                    ? 'bg-red-500 text-white shadow-[0_0_24px_rgba(220,38,38,0.28)]'
+                    ? 'bg-red-500 text-white shadow-[0_0_24px_rgba(220,38,38,0.28)] scale-[1.02]'
                     : 'relative text-slate-300 after:absolute after:inset-x-4 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-red-400 after:transition hover:bg-red-500/10 hover:text-red-100 hover:after:scale-x-100'
                 }`}
               >

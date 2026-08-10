@@ -71,7 +71,7 @@ export const projects = [
     stack: ['React', 'Tailwind CSS', 'Motion'],
     features: ['Responsive sections', 'Premium red theme', 'Recruiter-friendly content'],
     github: 'https://github.com/roshzxn1003/portfolio',
-    live: 'www.roshzen.in ',
+    live: 'https://roshzen.in',
   },
    {
     title: 'Love Vault',

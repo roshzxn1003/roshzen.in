@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import Reveal from './Reveal'
 import SectionHeader from './SectionHeader'
 
@@ -24,11 +25,12 @@ function Skills({ skillGroups }) {
                   </span>
                 </div>
                 <h3 className="text-2xl font-bold text-white">{group.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{group.skills.length} technologies</p>
                 <div className="mt-6 flex flex-wrap gap-2">
                   {group.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="rounded-full border border-red-400/15 bg-black/35 px-3 py-2 text-sm text-slate-200 transition group-hover:border-red-300/40 group-hover:bg-red-500/10"
+                      className="rounded-full border border-red-400/15 bg-black/35 px-3 py-2 text-sm text-slate-200 transition group-hover:border-red-300/40 group-hover:bg-red-500/10 hover:scale-105 cursor-default"
                     >
                       {skill}
                     </span>

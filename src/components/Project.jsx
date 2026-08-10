@@ -31,9 +31,19 @@ function ProjectAction({ href, children, icon: Icon }) {
 
 function Projects({ projects }) {
   const updateCardGlow = (event) => {
-    const rect = event.currentTarget.getBoundingClientRect()
-    event.currentTarget.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`)
-    event.currentTarget.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`)
+    const card = event.currentTarget
+    const rect = card.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    card.style.setProperty('--mouse-x', `${x}px`)
+    card.style.setProperty('--mouse-y', `${y}px`)
+    const rotateX = ((y - rect.height / 2) / rect.height) * -6
+    const rotateY = ((x - rect.width / 2) / rect.width) * 6
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`
+  }
+
+  const resetCardTilt = (event) => {
+    event.currentTarget.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0)'
   }
 
   return (
@@ -48,8 +58,10 @@ function Projects({ projects }) {
         {projects.map((project, index) => (
           <Reveal key={project.title} delay={index * 0.06}>
             <article
-              className="project-card red-corner glass-panel group flex h-full flex-col overflow-hidden rounded-3xl p-6 transition duration-300 hover:-translate-y-2 hover:border-red-400/45"
+              className="project-card red-corner glass-panel group flex h-full flex-col overflow-hidden rounded-3xl p-6 transition-[border-color,box-shadow] duration-300 hover:border-red-400/45"
               onMouseMove={updateCardGlow}
+              onMouseLeave={resetCardTilt}
+              style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
             >
               <div className="flex items-start justify-between gap-5">
                 <div>

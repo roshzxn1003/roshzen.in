@@ -90,7 +90,7 @@ function Contact({ socialLinks }) {
                   return (
                     <div
                       key={item.label}
-                      className="flex items-center gap-4 rounded-2xl border border-red-400/15 bg-black/30 p-4"
+                      className="flex items-center gap-4 rounded-2xl border border-red-400/15 bg-black/30 p-4 transition-colors duration-300"
                     >
                       {content}
                     </div>
@@ -103,7 +103,7 @@ function Contact({ socialLinks }) {
                     href={item.href}
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
-                    className="group flex items-center gap-4 rounded-2xl border border-red-400/15 bg-black/30 p-4 transition hover:-translate-y-1 hover:border-red-400/40 hover:bg-red-500/10"
+                    className="group flex items-center gap-4 rounded-2xl border border-red-400/15 bg-black/30 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-red-400/40 hover:bg-red-500/10 hover:shadow-[0_4px_20px_rgba(220,38,38,0.1)]"
                   >
                     {content}
                   </a>
@@ -169,7 +169,7 @@ function Contact({ socialLinks }) {
                 name="projectType"
                 value={form.projectType}
                 onChange={handleChange}
-                className="contact-input text-slate-900"
+                className="contact-input text-slate-200"
                 disabled={status === 'loading'}
               >
                 <option value="Portfolio website">Portfolio website</option>
@@ -198,7 +198,7 @@ function Contact({ socialLinks }) {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-500 to-red-700 px-6 py-4 font-bold text-white shadow-[0_0_32px_rgba(220,38,38,0.28)] transition hover:-translate-y-1 hover:from-red-400 hover:to-red-600 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-500 to-red-700 px-6 py-4 font-bold text-white shadow-[0_0_32px_rgba(220,38,38,0.28)] transition-all duration-300 hover:-translate-y-1 hover:from-red-400 hover:to-red-600 hover:shadow-[0_0_50px_rgba(220,38,38,0.4)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
             >
               {status === 'loading' ? (
                 <>

@@ -29,7 +29,7 @@ function About({ highlights, principles }) {
               {highlights.map((highlight) => (
                 <div
                   key={highlight}
-                  className="flex items-start gap-3 rounded-2xl border border-red-400/15 bg-red-500/[0.045] p-4"
+                  className="flex items-start gap-3 rounded-2xl border border-red-400/15 bg-red-500/[0.045] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-red-400/30"
                 >
                   <CheckCircle2 className="mt-1 shrink-0 text-red-300" size={19} />
                   <span className="leading-7 text-slate-200">{highlight}</span>
@@ -46,7 +46,7 @@ function About({ highlights, principles }) {
               return (
                 <div
                   key={item.label}
-                  className="red-corner glass-panel group rounded-3xl p-6 transition duration-300 hover:-translate-y-2 hover:border-red-400/45"
+                  className="red-corner glass-panel group rounded-3xl p-6 transition duration-300 hover:-translate-y-2 hover:border-red-400/45 cursor-default"
                 >
                   <span className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-red-500/10 text-red-300 transition group-hover:bg-red-500 group-hover:text-white">
                     <Icon size={22} />

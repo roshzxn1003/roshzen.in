@@ -451,7 +451,31 @@
   padding: 0;
   overflow: hidden;
   background: #050505;
+  cursor: auto !important;
   animation: dt-fullscreen-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dt-fullscreen-root *,
+.developer-terminal * {
+  cursor: auto !important;
+}
+
+.dt-fullscreen-root button,
+.dt-fullscreen-root a,
+.dt-fullscreen-root .dt-control,
+.dt-fullscreen-root [role="button"],
+.developer-terminal button,
+.developer-terminal a,
+.developer-terminal .dt-control,
+.developer-terminal [role="button"] {
+  cursor: pointer !important;
+}
+
+.dt-fullscreen-root .dt-body,
+.dt-fullscreen-root input,
+.developer-terminal .dt-body,
+.developer-terminal input {
+  cursor: text !important;
 }
 
 .is-fullscreen {
@@ -569,3 +593,18 @@
     text-overflow: ellipsis;
   }
 }
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

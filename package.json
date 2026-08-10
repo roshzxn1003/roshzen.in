@@ -9,12 +9,15 @@
     "dev:all": "concurrently -n frontend,backend -c cyan,green \"vite\" \"node server/index.js\"",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "chat": "node chat.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@google/genai": "^2.16.0",
     "@tailwindcss/vite": "^4.3.2",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "lucide-react": "^1.22.0",
     "motion": "^12.42.1",

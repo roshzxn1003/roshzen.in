@@ -79,7 +79,7 @@ export const projects = [
     stack: ['React', 'Supabase', 'Mobile UI'],
     features: ['Private vault concept', 'Memory timeline', 'Secure app structure'],
     github: 'https://github.com/roshzxn1003/zen-love-vault',
-    live: 'https://zen-love-vault.vercel.app',
+    live: 'https://zen-love-vault.lovable.app',
   },
   {
     title: 'Zen Coder',

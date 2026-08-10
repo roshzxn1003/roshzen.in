@@ -1,3 +1,6 @@
+import { AiChatBox, FakeHacker, InteractiveContactCard, LiveClock, QrCodeGenerator, Stopwatch } from './InteractiveComponents'
+import { TerminalGames } from './TerminalGames'
+
 const renderCommand = (command) => {
   const [base, ...args] = command.split(' ')
 
@@ -9,6 +12,32 @@ const renderCommand = (command) => {
   )
 }
 
+const renderComponent = (compKey) => {
+  if (compKey === 'clock') return <LiveClock />
+  if (compKey === 'contact') return <InteractiveContactCard />
+  if (compKey.startsWith('stopwatch:')) {
+    const action = compKey.split(':')[1]
+    return <Stopwatch action={action} />
+  }
+  if (compKey.startsWith('hack:')) {
+    const target = compKey.split(':')[1]
+    return <FakeHacker target={target} />
+  }
+  if (compKey.startsWith('qr:')) {
+    const parts = compKey.split(':')
+    return <QrCodeGenerator text={parts[1]} url={parts[2]} />
+  }
+  if (compKey.startsWith('game:')) {
+    const game = compKey.split(':')[1]
+    return <TerminalGames game={game} />
+  }
+  if (compKey.startsWith('ai:')) {
+    const question = compKey.substring(3)
+    return <AiChatBox question={question} />
+  }
+  return null
+}
+
 function TerminalHistory({ entries }) {
   return (
     <div className="dt-history" aria-live="polite">
@@ -18,6 +47,16 @@ function TerminalHistory({ entries }) {
             <div className="dt-row dt-row-command" key={entry.id}>
               <span className="dt-prompt">arun@roshzen:~$</span>
               <span className="dt-command">{renderCommand(entry.command)}</span>
+            </div>
+          )
+        }
+
+        if (entry.type === 'component') {
+          return (
+            <div className="dt-output dt-output-component my-2" key={entry.id}>
+              {entry.lines.map((compKey, idx) => (
+                <div key={`${entry.id}-${idx}`}>{renderComponent(compKey)}</div>
+              ))}
             </div>
           )
         }

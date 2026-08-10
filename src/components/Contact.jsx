@@ -59,7 +59,6 @@ function Contact({ socialLinks }) {
       />
 
       <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        {/* ── Left: Social links ───────────────────────────────────────────── */}
         <Reveal>
           <div className="glass-panel h-full rounded-3xl p-6 md:p-8">
             <p className="font-mono text-sm uppercase tracking-[0.18em] text-red-300">
@@ -114,7 +113,6 @@ function Contact({ socialLinks }) {
           </div>
         </Reveal>
 
-        {/* ── Right: Contact form ──────────────────────────────────────────── */}
         <Reveal delay={0.08}>
           <form className="glass-panel rounded-3xl p-6 md:p-8" onSubmit={handleSubmit} noValidate>
 
@@ -127,8 +125,6 @@ function Contact({ socialLinks }) {
                 </span>
               </div>
             )}
-
-            {/* Error banner */}
             {status === 'error' && (
               <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-500/40 bg-red-500/10 p-4 text-red-300">
                 <XCircle size={20} className="mt-0.5 shrink-0" />

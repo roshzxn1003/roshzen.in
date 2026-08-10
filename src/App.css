@@ -369,11 +369,15 @@ section:not(:last-of-type)::after {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  mix-blend-mode: screen;
+}
+
+body:has(.dt-fullscreen-root) .custom-cursor {
+  display: none !important;
 }
 
 .cursor-dot,
 .cursor-ring {
+  pointer-events: none;
   position: fixed;
   left: 0;
   top: 0;
@@ -386,16 +390,16 @@ section:not(:last-of-type)::after {
   width: 8px;
   height: 8px;
   background: #ffffff;
-  box-shadow: 0 0 18px rgba(255, 0, 0, 0.95);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 1), 0 0 24px rgba(220, 38, 38, 0.8);
 }
 
 .cursor-ring {
   width: 34px;
   height: 34px;
-  border: 1px solid rgba(255, 15, 15, 0.582);
+  border: 1.5px solid rgba(239, 68, 68, 0.85);
   box-shadow:
-    0 0 34px rgba(220, 38, 38, 0.24),
-    inset 0 0 18px rgba(220, 38, 38, 0.12);
+    0 0 24px rgba(239, 68, 68, 0.4),
+    inset 0 0 12px rgba(239, 68, 68, 0.2);
   transition:
     width 180ms ease,
     height 180ms ease,

@@ -8,6 +8,7 @@ import Services from './components/Services'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
+import ScrollIndicator from './components/ScrollIndicator'
 import {
   designPrinciples,
   heroStats,
@@ -39,6 +40,7 @@ function App() {
       </div>
 
       <CustomCursor />
+      <ScrollIndicator />
       <div className="relative z-10">
         <Navbar />
         <Hero heroStats={heroStats} techBadges={techBadges} />

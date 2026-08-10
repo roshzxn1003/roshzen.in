@@ -3,6 +3,11 @@ import cors from 'cors'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { GoogleGenAI } from '@google/genai'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: '.env.local' })
+dotenv.config() // fallback to .env
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -15,6 +20,9 @@ app.use(cors({
   methods: ['POST', 'GET'],
 }))
 app.use(express.json())
+
+// Initialize Gemini
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function readSubmissions() {
@@ -35,6 +43,30 @@ function isValidEmail(email) {
 }
 
 // ── Routes ────────────────────────────────────────────────────────────────────
+
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body
+  if (!message) {
+    return res.status(400).json({ success: false, error: 'Message is required.' })
+  }
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(500).json({ success: false, error: 'API key is missing on the server.' })
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: message,
+      config: {
+        systemInstruction: "You are a helpful AI assistant inside a developer's portfolio terminal. Keep responses concise, helpful, and terminal-friendly. Only output plain text or basic formatting."
+      }
+    })
+    return res.json({ success: true, text: response.text })
+  } catch (error) {
+    console.error('Chat API Error:', error)
+    return res.status(500).json({ success: false, error: 'Failed to communicate with AI.' })
+  }
+})
 
 // POST /api/contact  — receive a new submission
 app.post('/api/contact', (req, res) => {
@@ -84,6 +116,7 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', time: new Date().
 app.listen(PORT, () => {
   console.log(`\n🚀 Contact API running on http://localhost:${PORT}`)
   console.log(`   POST /api/contact       — submit a message`)
+  console.log(`   POST /api/chat          — interact with Gemini AI`)
   console.log(`   GET  /api/submissions   — view all saved messages`)
   console.log(`   Submissions file: ${DATA_FILE}\n`)
 })

@@ -47,6 +47,12 @@ const aliases = {
   batch: 'runall',
   suite: 'runall',
   'run-all': 'runall',
+  links: 'roshzen-links',
+  linktree: 'roshzen-links',
+  linkhub: 'roshzen-links',
+  goto: 'open',
+  visit: 'open',
+  url: 'open',
 }
 
 const jokes = [
@@ -81,7 +87,8 @@ const commandList = [
   'ping', 'curl', 'wget', 'history', 'download', 'qr', 'open', 'toast', 'sound', 'boot',
   'stats', 'analytics', 'blogs', 'blog', 'devmode', 'uptime', 'date', 'time', 'uname',
   'sysinfo', 'calc', 'echo', 'whois', 'hire', 'freelance', 'credits', 'thanks', 'motd', 'version',
-  'ifconfig', 'ip', 'hostname', 'disk', 'memory', 'runall', 'demo', 'testall', 'batch', 'suite'
+  'ifconfig', 'ip', 'hostname', 'disk', 'memory', 'runall', 'demo', 'testall', 'batch', 'suite',
+  'roshzen-links', 'links', 'open', 'goto', 'visit', 'url', 'zenith', 'techstack', 'socials', 'hire'
 ]
 
 const makeOutput = (type, lines) => ({ type, lines: Array.isArray(lines) ? lines : [lines] })
@@ -216,6 +223,228 @@ export const executeCommand = (rawCommand, context = {}) => {
 
   // Sound feedback
   if (context.playSound) context.playSound('enter')
+
+  // 0. OPEN ANY URL / GOTO / VISIT / SHORTCUT HANDLER
+  if (command === 'open' || command === 'goto' || command === 'visit' || command === 'url') {
+    const rawTarget = args.join(' ').trim()
+    if (!rawTarget) {
+      return [
+        makeOutput('header', '⚡ Terminal URL Launcher Usage:'),
+        makeOutput('list', [
+          '  open <url>         : Open ANY website URL (e.g. open google.com, open https://x.com)',
+          '  open github        : Open GitHub repository profile',
+          '  open linkedin      : Open LinkedIn professional network',
+          '  open youtube       : Open YouTube channel',
+          '  open instagram     : Open Instagram profile',
+          '  open links         : Open RoshZen Private LinkHub (/links)',
+          '  open admin         : Open RoshZen Protected Admin (/admin)',
+          '  open resume        : Download/view PDF resume',
+        ]),
+      ]
+    }
+
+    const target = rawTarget.toLowerCase()
+
+    if (target === 'links' || target === 'linktree' || target === 'linkhub') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/links')
+        window.dispatchEvent(new Event('popstate'))
+      }
+      return [makeOutput('success', '⚡ Navigating to RoshZen Private LinkHub (/links)...')]
+    }
+
+    if (target === 'admin') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/admin')
+        window.dispatchEvent(new Event('popstate'))
+      }
+      return [makeOutput('success', '⚡ Navigating to RoshZen Admin Dashboard (/admin)...')]
+    }
+
+    if (target === 'login') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/login')
+        window.dispatchEvent(new Event('popstate'))
+      }
+      return [makeOutput('success', '⚡ Navigating to RoshZen Login Gateway (/login)...')]
+    }
+
+    if (target === 'github' || target === 'gh') {
+      openInNewTab('https://github.com/roshzxn1003')
+      return [makeOutput('success', '⚡ Opening GitHub Profile (github.com/roshzxn1003)...')]
+    }
+
+    if (target === 'linkedin' || target === 'li') {
+      openInNewTab('https://www.linkedin.com/in/arun-roshan-gj/')
+      return [makeOutput('success', '⚡ Opening LinkedIn Profile (linkedin.com/in/arun-roshan-gj)...')]
+    }
+
+    if (target === 'youtube' || target === 'yt') {
+      openInNewTab('https://www.youtube.com/@roshzxn')
+      return [makeOutput('success', '⚡ Opening YouTube Channel (youtube.com/@roshzxn)...')]
+    }
+
+    if (target === 'instagram' || target === 'ig') {
+      openInNewTab('https://instagram.com/rosh.zxn')
+      return [makeOutput('success', '⚡ Opening Instagram Profile (instagram.com/rosh.zxn)...')]
+    }
+
+    if (target === 'resume' || target === 'cv') {
+      openInNewTab('/AR-resume.pdf')
+      return [makeOutput('success', '⚡ Opening PDF Resume (/AR-resume.pdf)...')]
+    }
+
+    if (target === 'portfolio') {
+      openInNewTab('https://roshzen.in')
+      return [makeOutput('success', '⚡ Opening Main Portfolio (roshzen.in)...')]
+    }
+
+    // Check if file exists in VFS
+    const vfsRes = vfs.cat(rawTarget)
+    if (vfsRes.success) {
+      return [makeOutput('output', vfsRes.content.split('\n'))]
+    }
+
+    // Format and open ANY general URL typed in terminal
+    let formattedUrl = rawTarget
+    if (!/^https?:\/\//i.test(formattedUrl)) {
+      formattedUrl = 'https://' + formattedUrl
+    }
+
+    try {
+      openInNewTab(formattedUrl)
+      return [
+        makeOutput('success', `⚡ Launching URL: ${formattedUrl}`),
+        makeOutput('output', `Opened in a new browser tab.`),
+      ]
+    } catch {
+      return [makeOutput('error', `Failed to open URL "${rawTarget}".`)]
+    }
+  }
+
+  // ZENITH PROJECT COMMAND
+  if (command === 'zenith') {
+    return [
+      makeOutput('header', '📱 ZENITH - Dual-Space Personal Finance App Architecture'),
+      makeOutput('output', [
+        '----------------------------------------------------------------------',
+        'Overview      : Zenith solves single vs shared family expense tracking.',
+        'Architecture  : Financial Space Switcher (Private vs Family Space).',
+        'Tech Stack    : Flutter, Dart, Riverpod 2.0, GoRouter, Hive, Supabase.',
+        'Key Features  : Biometric Auth, Realtime Sync, Translucent Anti-Gravity UI.',
+        'Status        : Active Mobile Architecture Project.',
+        '----------------------------------------------------------------------',
+      ]),
+    ]
+  }
+
+  // TECHSTACK COMMAND
+  if (command === 'techstack') {
+    return [
+      makeOutput('header', '🛠 ARUN ROSHAN - CATEGORIZED TECH STACK'),
+      makeOutput('output', [
+        '----------------------------------------------------------------------',
+        '• Frontend    : React 19, Vite, Next.js, JavaScript (ES6+), HTML5/CSS3',
+        '• Styling     : TailwindCSS, Glassmorphism, CSS Shaders, Framer Motion',
+        '• Mobile      : Flutter, Dart, Riverpod State Management',
+        '• Backend/DB  : Node.js, Express, Supabase PostgreSQL, MongoDB',
+        '• Tools/Dev   : Git, GitHub, Linux CLI, Vercel, REST APIs',
+        '----------------------------------------------------------------------',
+      ]),
+    ]
+  }
+
+  // SOCIALS COMMAND
+  if (command === 'socials') {
+    return [
+      makeOutput('header', '🌐 ARUN ROSHAN - SOCIAL & OFFICIAL PROFILES'),
+      makeOutput('list', [
+        '• GitHub    : https://github.com/roshzxn1003  (Type: open github)',
+        '• LinkedIn  : https://www.linkedin.com/in/arun-roshan-gj/  (Type: open linkedin)',
+        '• YouTube   : https://www.youtube.com/@roshzxn  (Type: open youtube)',
+        '• Instagram : https://instagram.com/rosh.zxn  (Type: open instagram)',
+        '• LinkHub   : /links  (Type: open links)',
+      ]),
+    ]
+  }
+
+  // HIRE / FREELANCE COMMAND
+  if (command === 'hire' || command === 'freelance') {
+    return [
+      makeOutput('header', '🤝 HIRE ARUN ROSHAN / COLLABORATIONS'),
+      makeOutput('output', [
+        '----------------------------------------------------------------------',
+        'Status        : Available for Freelance & Frontend Developer Roles',
+        'Specialization: Custom React Web Apps, LinkHubs, UI Engineering',
+        'Direct Email  : arunroshan1003@gmail.com',
+        'Location      : India (Remote Available Worldwide)',
+        '----------------------------------------------------------------------',
+      ]),
+    ]
+  }
+
+  // ROSHZEN PRIVATE LINKHUB TERMINAL COMMAND
+  if (command === 'roshzen-links' || command === 'links') {
+    const subCmd = (args[0] || 'open').toLowerCase()
+
+    if (subCmd === 'open' || subCmd === 'launch') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/links')
+        window.dispatchEvent(new Event('popstate'))
+      }
+      return [
+        makeOutput('success', '⚡ Opening RoshZen Private LinkHub (/links)...'),
+        makeOutput('output', 'Accessing secure personal link hub...'),
+      ]
+    }
+
+    if (subCmd === 'admin') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/admin')
+        window.dispatchEvent(new Event('popstate'))
+      }
+      return [
+        makeOutput('success', '⚡ Opening RoshZen Admin Command Center (/admin)...'),
+        makeOutput('output', 'Redirecting to admin gateway...'),
+      ]
+    }
+
+    if (subCmd === 'login') {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', '/login')
+        window.dispatchEvent(new Event('popstate'))
+      }
+      return [
+        makeOutput('success', '⚡ Opening RoshZen Admin Login Gateway (/login)...'),
+      ]
+    }
+
+    if (subCmd === 'list') {
+      return [
+        makeOutput('success', '⚡ RoshZen Private Links:'),
+        makeOutput('list', [
+          '• Portfolio Website     : https://www.roshzen.in',
+          '• GitHub Repositories   : https://github.com/roshzxn1003',
+          '• LinkedIn Network      : https://www.linkedin.com/in/arun-roshan-gj/',
+          '• YouTube Channel       : https://www.youtube.com/@roshzxn',
+          '• Instagram             : https://instagram.com/rosh.zxn',
+          '• Download Resume (PDF) : https://www.roshzen.in/AR-resume.pdf',
+          '• Direct Email          : mailto:arunroshan1003@gmail.com',
+        ]),
+        makeOutput('output', 'Type "roshzen-links open" or "links open" to launch the UI.'),
+      ]
+    }
+
+    return [
+      makeOutput('header', '⚡ RoshZen Private LinkHub Terminal Commands:'),
+      makeOutput('list', [
+        '  roshzen-links open   : Launch private LinkHub UI (/links)',
+        '  roshzen-links list   : Display registered links in terminal',
+        '  roshzen-links admin  : Open protected Admin Dashboard (/admin)',
+        '  roshzen-links login  : Open Admin Login Gateway (/login)',
+      ]),
+    ]
+  }
 
   // 1. ECHO
   if (command === 'echo') {

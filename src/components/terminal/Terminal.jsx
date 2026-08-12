@@ -172,6 +172,21 @@ function Terminal() {
     setFullscreen(false)
   }, [])
 
+  // Global typing focus listener: typing anywhere auto-focuses the terminal (even in fullscreen)
+  useEffect(() => {
+    const handleGlobalKeydown = (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return
+      const targetTag = e.target?.tagName?.toLowerCase()
+      if (targetTag === 'input' || targetTag === 'textarea' || e.target?.isContentEditable) {
+        if (!terminalRef.current?.contains(e.target)) return
+      }
+      setFocused(true)
+    }
+
+    window.addEventListener('keydown', handleGlobalKeydown)
+    return () => window.removeEventListener('keydown', handleGlobalKeydown)
+  }, [])
+
   useEffect(() => {
     if (!fullscreen) return
     setFocused(true)

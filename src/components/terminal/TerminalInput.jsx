@@ -1,15 +1,4 @@
-import { useEffect, useRef } from 'react'
-
-const renderInput = (value) => {
-  const [base, ...args] = value.split(' ')
-
-  return (
-    <>
-      <span className="dt-command-name">{base}</span>
-      {args.length > 0 && <span className="dt-command-args"> {args.join(' ')}</span>}
-    </>
-  )
-}
+import { useEffect, useRef, useState } from 'react'
 
 function TerminalInput({
   value,
@@ -28,33 +17,52 @@ function TerminalInput({
   autoCompleteSuggestions = [],
 }) {
   const inputRef = useRef(null)
+  const [cursorPos, setCursorPos] = useState(value.length)
 
-  // Force focus input whenever focused state is true or clicked
+  const syncCursorPos = () => {
+    setTimeout(() => {
+      if (inputRef.current) {
+        setCursorPos(inputRef.current.selectionStart ?? value.length)
+      }
+    }, 0)
+  }
+
+  // Force focus input whenever focused state is true
   useEffect(() => {
     if (focused) {
       inputRef.current?.focus()
     }
-  }, [focused, value])
+  }, [focused])
 
-  const handleRowClick = (e) => {
-    // Prevent button or link clicks inside history/game from losing focus
+  useEffect(() => {
+    syncCursorPos()
+  }, [value])
+
+  const handleRowClick = () => {
     if (onFocus) onFocus()
     inputRef.current?.focus()
+    syncCursorPos()
   }
 
   const handleChange = (e) => {
     onChange(e.target.value)
     if (playSound) playSound('typing')
+    syncCursorPos()
+  }
+
+  const handleSelect = () => {
+    syncCursorPos()
   }
 
   const handleKeyDown = (event) => {
     const isCtrl = event.ctrlKey || event.metaKey
     const key = event.key.toLowerCase()
 
-    // 1. CTRL + C (SIGINT - Interrupt / Cancel command / Stop process)
+    // 1. CTRL + C (SIGINT - Interrupt)
     if (isCtrl && key === 'c') {
       event.preventDefault()
       if (onInterrupt) onInterrupt(value)
+      syncCursorPos()
       return
     }
 
@@ -62,10 +70,11 @@ function TerminalInput({
     if (isCtrl && key === 'l') {
       event.preventDefault()
       if (onClearScreen) onClearScreen()
+      syncCursorPos()
       return
     }
 
-    // 3. CTRL + U (Erase line from cursor to start)
+    // 3. CTRL + U (Erase line before cursor)
     if (isCtrl && key === 'u') {
       event.preventDefault()
       const inputEl = inputRef.current
@@ -75,6 +84,7 @@ function TerminalInput({
         onChange(newValue)
         setTimeout(() => {
           inputEl.setSelectionRange(0, 0)
+          syncCursorPos()
         }, 0)
       } else {
         onChange('')
@@ -82,7 +92,7 @@ function TerminalInput({
       return
     }
 
-    // 4. CTRL + K (Erase line from cursor to end)
+    // 4. CTRL + K (Erase line after cursor)
     if (isCtrl && key === 'k') {
       event.preventDefault()
       const inputEl = inputRef.current
@@ -90,6 +100,7 @@ function TerminalInput({
         const selStart = inputEl.selectionStart || 0
         const newValue = value.slice(0, selStart)
         onChange(newValue)
+        syncCursorPos()
       } else {
         onChange('')
       }
@@ -111,6 +122,7 @@ function TerminalInput({
         onChange(newValue)
         setTimeout(() => {
           inputEl.setSelectionRange(newBefore.length, newBefore.length)
+          syncCursorPos()
         }, 0)
       }
       return
@@ -120,6 +132,7 @@ function TerminalInput({
     if (isCtrl && key === 'a') {
       event.preventDefault()
       inputRef.current?.setSelectionRange(0, 0)
+      syncCursorPos()
       return
     }
 
@@ -128,66 +141,59 @@ function TerminalInput({
       event.preventDefault()
       const len = value.length
       inputRef.current?.setSelectionRange(len, len)
-      return
-    }
-
-    // 8. CTRL + D (EOF / Delete character)
-    if (isCtrl && key === 'd') {
-      event.preventDefault()
-      if (!value) {
-        if (onEof) onEof()
-      } else {
-        const inputEl = inputRef.current
-        if (inputEl) {
-          const pos = inputEl.selectionStart || 0
-          if (pos < value.length) {
-            const newValue = value.slice(0, pos) + value.slice(pos + 1)
-            onChange(newValue)
-            setTimeout(() => {
-              inputEl.setSelectionRange(pos, pos)
-            }, 0)
-          }
-        }
-      }
-      return
-    }
-
-    // 9. CTRL + Z (Suspend process)
-    if (isCtrl && key === 'z') {
-      event.preventDefault()
-      if (onSuspend) onSuspend()
-      return
-    }
-
-    // 10. CTRL + R (Reverse search history)
-    if (isCtrl && key === 'r') {
-      event.preventDefault()
-      if (onHistoryPrevious) onHistoryPrevious()
+      syncCursorPos()
       return
     }
 
     if (event.key === 'Enter') {
       event.preventDefault()
       onSubmit()
+      setCursorPos(0)
       return
     }
 
     if (event.key === 'ArrowUp') {
       event.preventDefault()
       onHistoryPrevious()
+      syncCursorPos()
       return
     }
 
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       onHistoryNext()
+      syncCursorPos()
       return
     }
 
     if (event.key === 'Tab') {
       event.preventDefault()
       onAutocomplete()
+      syncCursorPos()
+      return
     }
+
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End', 'Backspace', 'Delete'].includes(event.key)) {
+      syncCursorPos()
+    }
+  }
+
+  // Render text with dynamic block blinker positioned at exact cursorPos
+  const renderVisualContent = () => {
+    const pos = Math.min(Math.max(0, cursorPos), value.length)
+    const before = value.slice(0, pos)
+    const charAtCursor = value[pos]
+    const after = value.slice(pos + 1)
+
+    return (
+      <span className="dt-input-value flex items-center">
+        <span>{before}</span>
+        <span className={`dt-cursor ${focused ? 'is-focused' : ''}`}>
+          {charAtCursor === ' ' ? '\u00A0' : charAtCursor || '\u00A0'}
+        </span>
+        <span>{after}</span>
+      </span>
+    )
   }
 
   return (
@@ -203,6 +209,7 @@ function TerminalInput({
                 e.stopPropagation()
                 onChange(sug)
                 inputRef.current?.focus()
+                syncCursorPos()
               }}
               className="rounded bg-slate-800 px-2 py-0.5 text-red-300 hover:bg-red-500/20 hover:text-white cursor-pointer"
             >
@@ -215,8 +222,7 @@ function TerminalInput({
       <div className={`dt-input-row${focused ? ' is-focused' : ''}`} onClick={handleRowClick}>
         <span className="dt-prompt">arun@roshzen:~$</span>
         <div className="dt-input-visual" aria-hidden="true">
-          <span className="dt-input-value">{value ? renderInput(value) : null}</span>
-          <span className="dt-cursor" />
+          {renderVisualContent()}
         </div>
         <input
           ref={inputRef}
@@ -224,6 +230,8 @@ function TerminalInput({
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onSelect={handleSelect}
+          onKeyUp={syncCursorPos}
           onFocus={onFocus}
           autoCapitalize="none"
           autoComplete="off"

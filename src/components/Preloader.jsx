@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import WebThreads from './WebThreads'
 
 function Preloader() {
   const [loading, setLoading] = useState(true)
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2800)
+    // End preloader slightly after hitting 100
+    const timer = setTimeout(() => setLoading(false), 3800)
     return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
     if (count >= 100) return
-    const speed = count < 30 ? 35 : count < 70 ? 20 : count < 90 ? 30 : 50
-    const timeout = setTimeout(() => setCount((c) => Math.min(c + 1, 100)), speed)
+    const easeOut = count < 40 ? 15 : count < 75 ? 25 : count < 95 ? 40 : 80
+    const timeout = setTimeout(() => setCount(c => Math.min(c + 1, 100)), easeOut)
     return () => clearTimeout(timeout)
   }, [count])
 
@@ -24,155 +24,129 @@ function Preloader() {
         <motion.div
           key="preloader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.04 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#050505] overflow-hidden"
+          exit={{ 
+            opacity: 0,
+            scale: 1.15,
+            filter: "blur(10px)",
+            transition: { duration: 1.2, ease: [0.76, 0, 0.24, 1] } 
+          }}
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#030303] overflow-hidden"
         >
-          {/* Background WebThreads Effect */}
-          <div className="absolute inset-0 pointer-events-none opacity-80">
-            <WebThreads
-              color1="#ef4444"
-              color2="#991b1b"
-              color3="#ffffff"
-              speed={0.25}
-              threadCount={8}
-              frequency={4.5}
-              spread={0.22}
-              taper={1.0}
-              position={0.5}
-              fanMode="center"
-              glow={0.03}
-              falloff={0.5}
-              thickness={1.2}
-              brightness={0.8}
-              opacity={0.9}
-              mirror={true}
-              shimmer={true}
-              grain={true}
-              grainIntensity={0.04}
-              mouseInteraction={true}
-              mouseStrength={0.4}
+          {/* Ambient Glowing Orbs Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none mix-blend-screen">
+            <motion.div
+              animate={{ 
+                x: ['-10%', '10%', '-10%'],
+                y: ['-10%', '10%', '-10%'],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              className="absolute top-1/4 left-1/4 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-red-600/15 rounded-full blur-[100px]"
+            />
+            <motion.div
+              animate={{ 
+                x: ['10%', '-10%', '10%'],
+                y: ['10%', '-10%', '10%'],
+                scale: [1.2, 1, 1.2]
+              }}
+              transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+              className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-rose-900/20 rounded-full blur-[120px]"
             />
           </div>
 
-          {/* Subtle corner accents */}
-          <div className="absolute left-8 top-8 h-16 w-16 border-l border-t border-red-500/20" />
-          <div className="absolute right-8 top-8 h-16 w-16 border-r border-t border-red-500/20" />
-          <div className="absolute bottom-8 left-8 h-16 w-16 border-b border-l border-red-500/20" />
-          <div className="absolute bottom-8 right-8 h-16 w-16 border-b border-r border-red-500/20" />
-
-          {/* Faded background counter */}
-          <motion.span
-            className="absolute select-none font-mono text-[16rem] sm:text-[22rem] font-black leading-none text-white/[0.02]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            {String(count).padStart(2, '0')}
-          </motion.span>
-
-          {/* Center content */}
-          <div className="relative z-10 flex flex-col items-center gap-8">
-            {/* Ultra-bold metallic 3D AR Typography */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex flex-col items-center"
+          <div className="relative z-10 flex flex-col items-center w-full px-6">
+            
+            {/* The Main Circular HUD */}
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0, rotate: -15 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1] }}
+              className="relative flex flex-col items-center justify-center p-8 sm:p-12"
             >
-              {/* Metallic 3D AR Text SVG */}
-              <svg
-                viewBox="0 0 500 220"
-                className="w-[320px] h-[140px] sm:w-[500px] sm:h-[220px] select-none"
-                style={{
-                  filter:
-                    'drop-shadow(0 20px 30px rgba(0,0,0,0.95)) drop-shadow(0 0 45px rgba(239, 68, 68, 0.55))',
-                }}
-              >
-                <defs>
-                  {/* Metallic Red-to-White Fill Gradient */}
-                  <linearGradient id="metallic-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#ffffff" />
-                    <stop offset="28%" stopColor="#f87171" />
-                    <stop offset="60%" stopColor="#dc2626" />
-                    <stop offset="100%" stopColor="#7f1d1d" />
-                  </linearGradient>
-
-                  {/* 3D Metallic Bevel Border */}
-                  <linearGradient id="metallic-bevel" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                    <stop offset="35%" stopColor="#f87171" stopOpacity="0.6" />
-                    <stop offset="65%" stopColor="#ffffff" stopOpacity="0.9" />
-                    <stop offset="100%" stopColor="#991b1b" stopOpacity="0.8" />
-                  </linearGradient>
-                </defs>
-
-                <text
-                  x="50%"
-                  y="52%"
-                  dominantBaseline="central"
-                  textAnchor="middle"
-                  fontFamily="Syncopate, sans-serif"
-                  fontWeight="700"
-                  fontSize="160"
-                  letterSpacing="-4"
-                  fill="url(#metallic-fill)"
-                  stroke="url(#metallic-bevel)"
-                  strokeWidth="3.5"
-                >
-                  AR
-                </text>
-              </svg>
-
-              {/* Red glow baseline */}
+              
+              {/* Outer Spinning Rings (Sci-Fi HUD Effect) */}
               <motion.div
-                className="mt-3 h-px w-full max-w-[320px] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_12px_rgba(239,68,68,0.8)]"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-2 sm:-inset-4 border border-white/[0.03] rounded-full"
+                style={{ borderTopColor: 'rgba(239, 68, 68, 0.8)', borderRightColor: 'rgba(239, 68, 68, 0.2)' }}
               />
-            </motion.div>
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-6 sm:-inset-10 border border-white/[0.02] rounded-full"
+                style={{ borderBottomColor: 'rgba(255, 255, 255, 0.4)', borderLeftColor: 'rgba(255, 255, 255, 0.1)' }}
+              />
 
-            {/* Name reveal */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col items-center gap-2"
-            >
-              <p className="font-mono text-xs uppercase tracking-[0.4em] text-red-400/90">
-                Arun Roshan
-              </p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-slate-500">
-                Portfolio • 2025
-              </p>
-            </motion.div>
-
-            {/* Progress bar */}
-            <div className="w-52">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
-                  Loading
-                </span>
-                <span className="font-mono text-[10px] tabular-nums tracking-wider text-red-400">
-                  {count}%
-                </span>
-              </div>
-              <div className="h-px w-full bg-white/[0.08]">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-400 shadow-[0_0_12px_rgba(239,68,68,0.7)]"
-                  style={{ width: `${count}%` }}
+              {/* Central Glassmorphic Core */}
+              <div className="relative flex items-center justify-center w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-black/40 backdrop-blur-2xl border border-white/10 shadow-[0_0_60px_rgba(239,68,68,0.15)] overflow-hidden">
+                
+                {/* Rising Liquid Gradient */}
+                <motion.div 
+                  className="absolute bottom-0 w-full bg-gradient-to-t from-red-600/40 via-red-500/20 to-transparent"
+                  initial={{ height: "0%" }}
+                  animate={{ height: `${count}%` }}
+                  transition={{ ease: "linear", duration: 0.1 }}
                 />
+                
+                {/* Core Content */}
+                <div className="relative z-10 flex flex-col items-center">
+                  <motion.span 
+                    className="font-mono text-5xl sm:text-7xl font-bold text-white tracking-tighter"
+                    style={{ textShadow: "0 0 30px rgba(255,255,255,0.4)" }}
+                  >
+                    {count}
+                  </motion.span>
+                  <motion.span 
+                    animate={{ opacity: count === 100 ? [1, 0.5, 1] : 1 }}
+                    transition={{ repeat: count === 100 ? Infinity : 0, duration: 1 }}
+                    className="text-red-400 font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] mt-2"
+                  >
+                    {count === 100 ? 'Unlocked' : 'Loading'}
+                  </motion.span>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Subtle scanline */}
-          <motion.div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-red-500/[0.02] to-transparent"
-            animate={{ y: ['-100%', '100%'] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-          />
+            </motion.div>
+
+            {/* Premium Typography Reveal */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 1, ease: [0.76, 0, 0.24, 1] }}
+              className="mt-16 sm:mt-24 text-center"
+            >
+              <h2 className="text-xl sm:text-3xl font-black tracking-[0.4em] sm:tracking-[0.6em] text-white uppercase ml-[0.4em] sm:ml-[0.6em]" style={{ textShadow: "0 10px 30px rgba(239,68,68,0.3)" }}>
+                Arun Roshan
+              </h2>
+              <div className="flex items-center justify-center gap-4 mt-4">
+                <div className="h-px w-8 bg-gradient-to-r from-transparent to-red-500/50" />
+                <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.3em] text-slate-400 uppercase">
+                  Interactive Portfolio
+                </p>
+                <div className="h-px w-8 bg-gradient-to-l from-transparent to-red-500/50" />
+              </div>
+            </motion.div>
+
+            {/* Sleek Loading Bar */}
+            <div className="w-full max-w-[240px] sm:max-w-xs h-[2px] bg-white/[0.05] mt-12 rounded-full overflow-hidden relative">
+              <motion.div 
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-red-600 via-red-400 to-white"
+                style={{ width: `${count}%` }}
+                initial={{ width: "0%" }}
+                animate={{ width: `${count}%` }}
+                transition={{ ease: "linear", duration: 0.1 }}
+              />
+              {/* Laser flare on the tip of the loading bar */}
+              <motion.div 
+                className="absolute top-1/2 -translate-y-1/2 w-12 h-[6px] bg-white/60 blur-[3px] rounded-full"
+                style={{ left: `calc(${count}% - 48px)` }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: count > 5 && count < 100 ? 1 : 0 }}
+              />
+            </div>
+            
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

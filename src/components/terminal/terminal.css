@@ -299,12 +299,19 @@
 
 .dt-cursor {
   display: inline-block;
-  width: 9px;
-  height: 1.14em;
-  margin-left: 2px;
+  min-width: 9px;
+  height: 1.18em;
+  line-height: 1.18em;
   background: var(--dt-accent);
-  box-shadow: 0 0 18px var(--dt-accent-glow);
+  color: var(--dt-bg-solid, #050505);
+  box-shadow: 0 0 12px var(--dt-accent-glow);
+  vertical-align: middle;
+  font-weight: bold;
   animation: dt-blink 1s steps(2, start) infinite;
+}
+
+.dt-cursor:empty::before {
+  content: '\00a0';
 }
 
 

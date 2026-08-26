@@ -50,8 +50,8 @@ function Projects({ projects }) {
     <section id="projects" className="section-shell py-20 md:py-28">
       <SectionHeader
         eyebrow="Projects"
-        title="Learning projects and app concepts designed like real product work."
-        text="These projects represent the kind of interfaces, ideas, and software thinking I am practicing as I grow from student developer to professional engineer."
+        title="Real builds, app concepts, and developer experiments — all in one place."
+        text="Every project here is a step in my journey — from polished portfolio work to creative app ideas and full-stack concepts built with modern tools."
       />
 
       <div className="grid gap-5 lg:grid-cols-2">

@@ -5,8 +5,9 @@ function Services({ services }) {
   return (
     <section id="services" className="section-shell py-20 md:py-28">
       <SectionHeader
-        eyebrow="What I Can Build"
-        title="Useful digital work for students, creators, churches, and small projects."
+        eyebrow="What Can I Build"
+        title="Websites, apps, and digital ideas — built clean, fast, and ready to launch."
+        text="From personal portfolios to app concepts and landing pages, here is the kind of work I love building as I grow as a developer."
       />
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

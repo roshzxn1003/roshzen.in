@@ -57,11 +57,14 @@
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.13) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.13) 1px, transparent 1px);
+    linear-gradient(rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.1) 1px, transparent 1px);
   background-size: 68px 68px;
-  mask-image: linear-gradient(to bottom, black, transparent 88%);
-  opacity: 0.62;
+  filter: blur(1.2px);
+  mix-blend-mode: screen;
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+  opacity: 0.35;
 }
 
 .binary-field {

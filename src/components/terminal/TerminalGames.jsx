@@ -148,10 +148,15 @@ export function SnakeGame({ onReturnToPrompt }) {
         onReturnToPrompt?.(false)
         return
       }
-      if (e.key === 'ArrowUp' && dir[0] !== 1) setDir([-1, 0])
-      if (e.key === 'ArrowDown' && dir[0] !== -1) setDir([1, 0])
-      if (e.key === 'ArrowLeft' && dir[1] !== 1) setDir([0, -1])
-      if (e.key === 'ArrowRight' && dir[1] !== -1) setDir([0, 1])
+      const key = e.key.toLowerCase()
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 's', 'a', 'd'].includes(key)) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+      if ((key === 'arrowup' || key === 'w') && dir[0] !== 1) setDir([-1, 0])
+      if ((key === 'arrowdown' || key === 's') && dir[0] !== -1) setDir([1, 0])
+      if ((key === 'arrowleft' || key === 'a') && dir[1] !== 1) setDir([0, -1])
+      if ((key === 'arrowright' || key === 'd') && dir[1] !== -1) setDir([0, 1])
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -472,6 +477,22 @@ if (dir === 'LEFT') {
     ])
     setScore(6)
   }
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      const key = e.key.toLowerCase()
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 's', 'a', 'd'].includes(key)) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+      if (key === 'arrowleft' || key === 'a') move(null, 'LEFT')
+      if (key === 'arrowright' || key === 'd') move(null, 'RIGHT')
+      if (key === 'arrowup' || key === 'w') move(null, 'UP')
+      if (key === 'arrowdown' || key === 's') move(null, 'DOWN')
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [grid])
 
   return (
     <div className="my-3 inline-block rounded-2xl border border-amber-500/40 bg-black/95 p-4 font-mono shadow-2xl">

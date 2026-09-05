@@ -1,7 +1,33 @@
-import { useEffect, useState } from 'react'
-import { AiChatBox, FakeHacker, GitHubCard, InteractiveContactCard, LiveClock, LoFiPlayerCard, QrCodeGenerator, Stopwatch } from './InteractiveComponents'
-import { TerminalGames } from './TerminalGames'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { soundFX } from './sound'
+
+const TerminalGames = lazy(() =>
+  import('./TerminalGames').then((module) => ({ default: module.TerminalGames })),
+)
+const AiChatBox = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.AiChatBox })),
+)
+const FakeHacker = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.FakeHacker })),
+)
+const GitHubCard = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.GitHubCard })),
+)
+const InteractiveContactCard = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.InteractiveContactCard })),
+)
+const LiveClock = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.LiveClock })),
+)
+const LoFiPlayerCard = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.LoFiPlayerCard })),
+)
+const QrCodeGenerator = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.QrCodeGenerator })),
+)
+const Stopwatch = lazy(() =>
+  import('./InteractiveComponents').then((module) => ({ default: module.Stopwatch })),
+)
 
 const renderCommand = (command) => {
   const [base, ...args] = command.split(' ')
@@ -14,7 +40,7 @@ const renderCommand = (command) => {
   )
 }
 
-const renderComponent = (compKey, onReturnToPrompt) => {
+const renderComponentInner = (compKey, onReturnToPrompt) => {
   if (compKey === 'clock') return <LiveClock onReturnToPrompt={onReturnToPrompt} />
   if (compKey === 'contact') return <InteractiveContactCard onReturnToPrompt={onReturnToPrompt} />
   if (compKey.startsWith('stopwatch:')) {
@@ -48,6 +74,16 @@ const renderComponent = (compKey, onReturnToPrompt) => {
     return <GitHubCard onReturnToPrompt={onReturnToPrompt} />
   }
   return null
+}
+
+const renderComponent = (compKey, onReturnToPrompt) => {
+  const element = renderComponentInner(compKey, onReturnToPrompt)
+  if (!element) return null
+  return (
+    <Suspense fallback={<div className="text-xs font-mono text-slate-500 animate-pulse my-2">Loading terminal component...</div>}>
+      {element}
+    </Suspense>
+  )
 }
 
 function TypewriterWelcome({ lines, soundEnabled = true }) {

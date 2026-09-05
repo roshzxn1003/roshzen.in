@@ -195,7 +195,7 @@ export const getDynamicSuggestions = (rawInput) => {
 }
 
 export const getWelcomeEntry = () =>
-  makeOutput('system', [
+  makeOutput('welcome', [
     '⚡ Welcome to RoshZen Hackerspace Developer Terminal v4.2',
     'Type "help" to list all 40+ commands.',
     'Try: "quiz", "status", "neofetch", "projects", "skill react", "ask Tell me about Arun", "theme cyber", or "tictactoe".',

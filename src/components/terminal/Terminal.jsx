@@ -467,7 +467,7 @@ function Terminal() {
           <BootSequence onComplete={() => setIsBooting(false)} />
         ) : (
           <>
-            <TerminalHistory entries={entries} />
+            <TerminalHistory entries={entries} soundEnabled={soundEnabled} />
             <TerminalInput
               value={input}
               onChange={handleInputChange}

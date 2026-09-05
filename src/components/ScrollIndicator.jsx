@@ -15,7 +15,7 @@ const ScrollIndicator = () => {
         style={{
           scaleX,
           transformOrigin: "0%",
-          boxShadow: "0 0 8px rgba(239, 68, 68, 0.6), 0 0 16px rgba(220, 38, 38, 0.4)",
+          boxShadow: "0 0 8px rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.6), 0 0 16px rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.4)",
         }}
       />
     </div>

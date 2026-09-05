@@ -69,7 +69,7 @@ function Preloader() {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
                 className="absolute -inset-2 sm:-inset-4 border border-white/[0.03] rounded-full"
-                style={{ borderTopColor: 'rgba(239, 68, 68, 0.8)', borderRightColor: 'rgba(239, 68, 68, 0.2)' }}
+                style={{ borderTopColor: 'rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.8)', borderRightColor: 'rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.2)' }}
               />
               <motion.div
                 animate={{ rotate: -360 }}
@@ -79,7 +79,7 @@ function Preloader() {
               />
 
               {/* Central Glassmorphic Core */}
-              <div className="relative flex items-center justify-center w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-black/40 backdrop-blur-2xl border border-white/10 shadow-[0_0_60px_rgba(239,68,68,0.15)] overflow-hidden">
+              <div className="relative flex items-center justify-center w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-black/40 backdrop-blur-2xl border border-white/10 shadow-[0_0_60px_rgba(var(--portfolio-accent-rgb,239,68,68),0.15)] overflow-hidden">
                 
                 {/* Rising Liquid Gradient */}
                 <motion.div 
@@ -116,7 +116,7 @@ function Preloader() {
               transition={{ delay: 0.6, duration: 1, ease: [0.76, 0, 0.24, 1] }}
               className="mt-16 sm:mt-24 text-center"
             >
-              <h2 className="text-xl sm:text-3xl font-black tracking-[0.4em] sm:tracking-[0.6em] text-white uppercase ml-[0.4em] sm:ml-[0.6em]" style={{ textShadow: "0 10px 30px rgba(239,68,68,0.3)" }}>
+              <h2 className="text-xl sm:text-3xl font-black tracking-[0.4em] sm:tracking-[0.6em] text-white uppercase ml-[0.4em] sm:ml-[0.6em]" style={{ textShadow: "0 10px 30px rgba(var(--portfolio-accent-rgb,239,68,68),0.3)" }}>
                 Arun Roshan
               </h2>
               <div className="flex items-center justify-center gap-4 mt-4">

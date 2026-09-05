@@ -216,7 +216,7 @@ function TerminalInput({
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       {/* Autocomplete Suggestions Popup when typing */}
       {autoCompleteSuggestions.length > 1 && (
         <div className="mb-2 flex flex-wrap gap-1.5 rounded-lg border border-red-500/20 bg-black/90 p-2 text-xs font-mono text-slate-300 select-none">

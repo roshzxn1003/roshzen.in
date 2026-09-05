@@ -22,7 +22,7 @@ function MouseSpotlight() {
       className="pointer-events-none fixed inset-0 z-[1] opacity-50 transition-opacity duration-300"
       style={{
         background:
-          'radial-gradient(600px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(220, 38, 38, 0.06), transparent 40%)',
+          'radial-gradient(600px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.06), transparent 40%)',
       }}
       aria-hidden="true"
     />

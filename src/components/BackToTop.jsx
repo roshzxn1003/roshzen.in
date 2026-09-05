@@ -30,7 +30,7 @@ function BackToTop() {
           exit={{ scale: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-8 right-8 z-50 grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-white shadow-[0_0_30px_rgba(220,38,38,0.35)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] active:scale-95"
+          className="fixed bottom-8 right-8 z-50 grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-white shadow-[0_0_30px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.35)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_50px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.5)] active:scale-95"
           aria-label="Back to top"
         >
           <svg
@@ -52,7 +52,7 @@ function BackToTop() {
               cy="24"
               r="22"
               fill="none"
-              stroke="rgba(239, 68, 68, 0.9)"
+              stroke="rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.9)"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeDasharray={circumference}

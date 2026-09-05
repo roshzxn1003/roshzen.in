@@ -19,6 +19,7 @@ import LinkTreePublic from './private-links/components/LinkTreePublic'
 import AdminDashboard from './private-links/components/AdminDashboard'
 import Login from './private-links/components/Login'
 import ProtectedRoute from './private-links/components/ProtectedRoute'
+import { applyPortfolioTheme, getStoredTheme } from './utils/portfolioTheme'
 
 import {
   designPrinciples,
@@ -68,6 +69,7 @@ function App() {
       }
     }
 
+    applyPortfolioTheme(getStoredTheme())
     handleRouteCheck()
     window.addEventListener('hashchange', handleRouteCheck)
     window.addEventListener('popstate', handleRouteCheck)

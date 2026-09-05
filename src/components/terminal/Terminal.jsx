@@ -11,6 +11,7 @@ import { soundFX } from './sound'
 import TerminalHistory from './TerminalHistory'
 import TerminalInput from './TerminalInput'
 import { terminalThemes } from './theme'
+import { applyPortfolioTheme } from '../../utils/portfolioTheme'
 import './terminal.css'
 
 const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`
@@ -174,12 +175,17 @@ function Terminal() {
 
   const handleSetTheme = (newTheme) => {
     setThemeName(newTheme)
+    applyPortfolioTheme(newTheme)
     try {
       localStorage.setItem('roshzen_term_theme', newTheme)
     } catch {
       // Ignore
     }
   }
+
+  useEffect(() => {
+    applyPortfolioTheme(themeName)
+  }, [themeName])
 
   const showToast = (msg) => {
     setToastMessage(msg)

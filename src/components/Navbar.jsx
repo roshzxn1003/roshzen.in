@@ -2,11 +2,26 @@ import { Download } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { navLinks, socialLinks } from '../data/portfolio'
 import StaggeredMenu from './StaggeredMenu'
+import { THEME_PALETTES, getStoredTheme } from '../utils/portfolioTheme'
 
 const resumeUrl = '/AR-resume.pdf'
 
 function Navbar() {
   const [active, setActive] = useState('home')
+  const [themePalette, setThemePalette] = useState(() => {
+    const current = getStoredTheme()
+    return THEME_PALETTES[current] || THEME_PALETTES.default
+  })
+
+  useEffect(() => {
+    const handleThemeChange = (e) => {
+      if (e.detail?.palette) {
+        setThemePalette(e.detail.palette)
+      }
+    }
+    window.addEventListener('portfolio-theme-change', handleThemeChange)
+    return () => window.removeEventListener('portfolio-theme-change', handleThemeChange)
+  }, [])
 
   useEffect(() => {
     const sections = navLinks
@@ -49,8 +64,8 @@ function Navbar() {
         socialItems={menuSocials}
         displaySocials={true}
         displayItemNumbering={true}
-        colors={['#1c0404', '#450a0a', '#991b1b']}
-        accentColor="#ef4444"
+        colors={themePalette.menuColors || ['#1c0404', '#450a0a', '#991b1b']}
+        accentColor={themePalette.accent}
         menuButtonColor="#ffffff"
         openMenuButtonColor="#ffffff"
         changeMenuColorOnOpen={true}
@@ -60,7 +75,7 @@ function Navbar() {
       <header className="hidden lg:block fixed inset-x-0 top-4 z-50">
         <nav className="section-shell nav-shell flex min-h-16 items-center justify-between gap-3 rounded-2xl px-4 py-3">
           <a href="#home" className="flex items-center gap-3 text-white" aria-label="RoshZen home">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-red-400 to-red-800 font-mono text-sm font-black text-white shadow-[0_0_28px_rgba(220,38,38,0.32)]">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-red-400 to-red-800 font-mono text-sm font-black text-white shadow-[0_0_28px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.32)]">
               AR
             </span>
             <span>
@@ -78,7 +93,7 @@ function Navbar() {
                   href={link.href}
                   className={`rounded-full px-4 py-2 text-sm transition duration-300 ${
                     isActive
-                      ? 'bg-red-500 text-white shadow-[0_0_24px_rgba(220,38,38,0.28)] scale-[1.02]'
+                      ? 'bg-red-500 text-white shadow-[0_0_24px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.28)] scale-[1.02]'
                       : 'relative text-slate-300 after:absolute after:inset-x-4 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-red-400 after:transition hover:bg-red-500/10 hover:text-red-100 hover:after:scale-x-100'
                   }`}
                 >
@@ -99,7 +114,7 @@ function Navbar() {
             </a>
             <a
               href="#contact"
-              className="rounded-xl bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_22px_rgba(220,38,38,0.25)] transition hover:from-red-400 hover:to-red-600"
+              className="rounded-xl bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_22px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.25)] transition hover:from-red-400 hover:to-red-600"
             >
               Contact
             </a>

@@ -40,25 +40,37 @@ function Projects({ projects }) {
     const rotateX = ((y - rect.height / 2) / rect.height) * -6
     const rotateY = ((x - rect.width / 2) / rect.width) * 6
     card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`
+    card.style.zIndex = '40'
+    if (card.parentElement) {
+      card.parentElement.style.zIndex = '40'
+    }
   }
 
   const resetCardTilt = (event) => {
     event.currentTarget.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0)'
+    event.currentTarget.style.zIndex = ''
+    if (event.currentTarget.parentElement) {
+      event.currentTarget.parentElement.style.zIndex = ''
+    }
   }
 
   return (
-    <section id="projects" className="section-shell py-20 md:py-28">
+    <section id="projects" className="section-shell py-20 md:py-28 relative z-20">
       <SectionHeader
         eyebrow="Projects"
         title="Real builds, app concepts, and developer experiments — all in one place."
         text="Every project here is a step in my journey — from polished portfolio work to creative app ideas and full-stack concepts built with modern tools."
       />
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-6 lg:gap-8 lg:grid-cols-2 p-1">
         {projects.map((project, index) => (
-          <Reveal key={project.title} delay={index * 0.06}>
+          <Reveal
+            key={project.title}
+            delay={index * 0.06}
+            className="relative z-10 transition-[z-index] duration-150 hover:z-40 h-full"
+          >
             <article
-              className="project-card red-corner glass-panel group flex h-full flex-col overflow-hidden rounded-3xl p-6 transition-[border-color,box-shadow] duration-300 hover:border-red-400/45"
+              className="project-card red-corner glass-panel group relative z-10 flex h-full flex-col overflow-hidden rounded-3xl p-6 transition-[border-color,box-shadow,z-index] duration-300 hover:z-40 hover:border-red-400/45 m-0.5"
               onMouseMove={updateCardGlow}
               onMouseLeave={resetCardTilt}
               style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}

@@ -14,7 +14,7 @@
 4. [Networking & Remote Diagnostics](#4-networking--remote-diagnostics)
 5. [Interactive Mini-Apps & Retro Games](#5-interactive-mini-apps--retro-games)
 6. [Visual Effects & Themes (12 Palettes)](#6-visual-effects--themes-12-palettes)
-7. [AI Co-Pilot & Smart Assistant](#7-ai-co-pilot--smart-assistant)
+7. [AI Co-Pilot & Smart Assistant](#7-ai-co-pilot--smart-assistant) 
 8. [Developer Tools, Insights & Metrics](#8-developer-tools-insights--metrics)
 9. [Easter Eggs & Secret Commands](#9-easter-eggs--secret-commands)
 

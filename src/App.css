@@ -253,6 +253,7 @@
 
 .skill-card,
 .project-card,
+.certificate-card,
 .service-card,
 .journey-card {
   position: relative;
@@ -261,6 +262,7 @@
 
 .skill-card::before,
 .project-card::before,
+.certificate-card::before,
 .service-card::before,
 .journey-card::before {
   content: '';
@@ -274,6 +276,7 @@
   transition: opacity 260ms ease;
 }
 
+.certificate-card::after,
 .project-card::after {
   content: '';
   position: absolute;
@@ -288,12 +291,14 @@
   transition: opacity 220ms ease;
 }
 
+.certificate-card:hover::after,
 .project-card:hover::after {
   opacity: 1;
 }
 
 .skill-card:hover::before,
 .project-card:hover::before,
+.certificate-card:hover::before,
 .service-card:hover::before,
 .journey-card:hover::before {
   opacity: 1;
@@ -301,6 +306,7 @@
 
 .skill-card:hover,
 .project-card:hover,
+.certificate-card:hover,
 .service-card:hover,
 .journey-card:hover {
   box-shadow:

@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient'
-import { defaultLinks, defaultProfile } from './supabaseService'
+import { defaultLinks } from './supabaseService'
 
 export async function getAllLinksAdmin() {
   try {

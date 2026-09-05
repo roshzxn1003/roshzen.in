@@ -3,6 +3,7 @@ import { ArrowUpRight, CheckCircle2, Loader2, Send, XCircle } from 'lucide-react
 import emailjs from '@emailjs/browser'
 import Reveal from './Reveal'
 import SectionHeader from './SectionHeader'
+import { saveSubmission } from '../private-links/lib/submissionService'
 
 const INITIAL = { name: '', email: '', projectType: 'Portfolio website', message: '' }
 
@@ -21,7 +22,15 @@ function Contact({ socialLinks }) {
     setErrorMsg('')
 
     try {
-      // Replaced the custom backend fetch with EmailJS
+      // Save locally & to database inbox
+      await saveSubmission({
+        name: form.name,
+        email: form.email,
+        projectType: form.projectType,
+        message: form.message,
+      })
+
+      // Send via EmailJS
       await emailjs.send(
         'service_eo8uktg',    // Replace with your EmailJS Service ID
         'template_mlzrdgm',   // Replace with your EmailJS Template ID

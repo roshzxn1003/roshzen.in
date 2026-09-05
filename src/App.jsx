@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import About from './components/About'
 import Skills from './components/Skills'
 import Projects from './components/Project'
+import Certificates from './components/Certificates'
 import Journey from './components/Journey'
 import Services from './components/Services'
 import Contact from './components/Contact'
@@ -20,28 +21,34 @@ import AdminDashboard from './private-links/components/AdminDashboard'
 import Login from './private-links/components/Login'
 import ProtectedRoute from './private-links/components/ProtectedRoute'
 import { applyPortfolioTheme, getStoredTheme } from './utils/portfolioTheme'
+import { fetchCertificates } from './private-links/lib/certificateService'
+import { fetchProjects } from './private-links/lib/projectService'
 
 import {
   designPrinciples,
   heroStats,
   journey,
   profileHighlights,
-  projects,
+  projects as initialProjects,
   services,
   skillGroups,
   socialLinks,
   techBadges,
 } from './data/portfolio'
+import { defaultCertificates } from './data/certificates'
 import './App.css'
 
-function PortfolioMainContent() {
+function PortfolioMainContent({ dynamicProjects, dynamicCertificates }) {
+  const activeProjects = dynamicProjects.filter((p) => p.is_active !== false)
+
   return (
     <>
       <Navbar />
       <Hero heroStats={heroStats} techBadges={techBadges} />
       <About highlights={profileHighlights} principles={designPrinciples} />
       <Skills skillGroups={skillGroups} />
-      <Projects projects={projects} />
+      <Projects projects={activeProjects} />
+      <Certificates certificates={dynamicCertificates} />
       <Journey journey={journey} />
       <Services services={services} />
       <Contact socialLinks={socialLinks} />
@@ -52,6 +59,21 @@ function PortfolioMainContent() {
 
 function App() {
   const [routeMode, setRouteMode] = useState('portfolio') // 'portfolio', 'links', 'admin', 'login'
+  const [dynamicProjects, setDynamicProjects] = useState(initialProjects)
+  const [dynamicCertificates, setDynamicCertificates] = useState(defaultCertificates)
+
+  useEffect(() => {
+    async function loadPortfolioData() {
+      try {
+        const [certs, projs] = await Promise.all([fetchCertificates(), fetchProjects()])
+        if (certs && certs.length > 0) setDynamicCertificates(certs)
+        if (projs && projs.length > 0) setDynamicProjects(projs)
+      } catch {
+        // fallback to initial
+      }
+    }
+    loadPortfolioData()
+  }, [])
 
   useEffect(() => {
     function handleRouteCheck() {
@@ -118,7 +140,12 @@ function App() {
             </ProtectedRoute>
           )}
 
-          {routeMode === 'portfolio' && <PortfolioMainContent />}
+          {routeMode === 'portfolio' && (
+            <PortfolioMainContent
+              dynamicProjects={dynamicProjects}
+              dynamicCertificates={dynamicCertificates}
+            />
+          )}
         </div>
       </main>
     </AuthProvider>

@@ -9,8 +9,8 @@ import os from 'os'
 import readline from 'readline'
 
 // Supabase Credentials
-const SUPABASE_URL = 'https://mcebmeplbhcfbkrywqdq.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZWJtZXBsYmhjZmJrcnl3cWRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NDk3NTUsImV4cCI6MjEwMjEyNTc1NX0.U6wVnk-uHAfkFaAcWQrk5fIWj3MR4nW3EjhcRCACq08'
+const SUPABASE_URL = 'https://uijwztgrkkcuyltnqfkx.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpand6dGdya2tjdXlsdG5xZmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0MTA0NjcsImV4cCI6MjEwMDk4NjQ2N30.R0sITYMCyJdxOcloZQGAV_zaJw7PgCQPzIIf8qYZr4U'
 const TARGET_HUB_URL = process.env.ROSHZEN_HUB_URL || 'http://localhost:5173/links'
 
 const SESSION_FILE = path.join(os.homedir(), '.roshzen-links-session.json')

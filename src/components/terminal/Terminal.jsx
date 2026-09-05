@@ -149,6 +149,7 @@ function Terminal() {
   const [toastMessage, setToastMessage] = useState(null)
   const [matrixActive, setMatrixActive] = useState(false)
   const [focused, setFocused] = useState(false)
+  const [focusTick, setFocusTick] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
   const [crtMode, setCrtMode] = useState(() => {
     if (typeof window === 'undefined') return false
@@ -194,10 +195,62 @@ function Terminal() {
     setFullscreen(false)
   }, [])
 
-  // Global typing focus listener: typing anywhere auto-focuses the terminal (even in fullscreen)
+  const handleInterrupt = useCallback((currentInput) => {
+    const cancelledText = currentInput ? `${currentInput}^C` : '^C'
+    setEntries((previous) => [
+      ...previous,
+      createCommandEntry(cancelledText),
+    ].slice(-120))
+    setInput('')
+    setMatrixActive(false)
+    if (soundEnabled) soundFX.playTyping()
+  }, [soundEnabled])
+
+  // Central return-to-terminal prompt controller
+  const focusTerminalPrompt = useCallback((addSigint = true) => {
+    if (addSigint) {
+      handleInterrupt(input)
+    }
+    // Blur any active element inside interactive components or on page
+    if (document.activeElement && document.activeElement !== terminalRef.current) {
+      document.activeElement.blur?.()
+    }
+    setFocused(true)
+    setFocusTick((prev) => prev + 1)
+    if (soundEnabled) soundFX.playTyping()
+    setTimeout(() => {
+      bodyRef.current?.scrollTo({
+        top: bodyRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }, 40)
+  }, [input, handleInterrupt, soundEnabled])
+
+  // Global typing and SIGINT (Ctrl+C) listener
   useEffect(() => {
     const handleGlobalKeydown = (e) => {
-      if (e.ctrlKey || e.altKey || e.metaKey) return
+      const isCtrl = e.ctrlKey || e.metaKey
+      const key = e.key.toLowerCase()
+
+      // 1. GLOBAL CTRL+C (SIGINT): Return to terminal prompt from any interactive component
+      if (isCtrl && key === 'c') {
+        const hasSelection = typeof window !== 'undefined' && window.getSelection()?.toString()?.trim()?.length > 0
+        // If user highlighted text to copy, preserve default copy behavior
+        if (!hasSelection) {
+          e.preventDefault()
+          focusTerminalPrompt(true)
+          return
+        }
+      }
+
+      // 2. GLOBAL ESCAPE: Return to terminal prompt without printing ^C
+      if (key === 'escape') {
+        focusTerminalPrompt(false)
+        return
+      }
+
+      // 3. Regular typing auto-focus
+      if (isCtrl || e.altKey || e.metaKey) return
       const targetTag = e.target?.tagName?.toLowerCase()
       if (targetTag === 'input' || targetTag === 'textarea' || e.target?.isContentEditable) {
         if (!terminalRef.current?.contains(e.target)) return
@@ -207,7 +260,7 @@ function Terminal() {
 
     window.addEventListener('keydown', handleGlobalKeydown)
     return () => window.removeEventListener('keydown', handleGlobalKeydown)
-  }, [])
+  }, [focusTerminalPrompt])
 
   useEffect(() => {
     if (!fullscreen) return
@@ -302,8 +355,9 @@ function Terminal() {
     if (type === 'enter') soundFX.playEnter()
   }
 
-  const submitCommand = () => {
-    const command = input.trim()
+  const submitCommand = (explicitCommand) => {
+    const raw = typeof explicitCommand === 'string' ? explicitCommand : input
+    const command = raw.trim()
     if (!command) return
 
     setInput('')
@@ -342,17 +396,16 @@ function Terminal() {
       createCommandEntry(command),
       ...output.map(createOutputEntry),
     ].slice(-120))
-  }
 
-  const handleInterrupt = (currentInput) => {
-    const cancelledText = currentInput ? `${currentInput}^C` : '^C'
-    setEntries((previous) => [
-      ...previous,
-      createCommandEntry(cancelledText),
-    ].slice(-120))
-    setInput('')
-    setMatrixActive(false)
-    if (soundEnabled) soundFX.playTyping()
+    // Re-focus prompt and scroll to bottom
+    setFocused(true)
+    setFocusTick((prev) => prev + 1)
+    setTimeout(() => {
+      bodyRef.current?.scrollTo({
+        top: bodyRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }, 40)
   }
 
   const handleClearScreen = () => {
@@ -519,7 +572,11 @@ function Terminal() {
           <BootSequence onComplete={() => setIsBooting(false)} />
         ) : (
           <>
-            <TerminalHistory entries={entries} soundEnabled={soundEnabled} />
+            <TerminalHistory
+              entries={entries}
+              soundEnabled={soundEnabled}
+              onReturnToPrompt={focusTerminalPrompt}
+            />
             <TerminalInput
               value={input}
               onChange={handleInputChange}
@@ -532,6 +589,7 @@ function Terminal() {
               onEof={handleEof}
               onSuspend={handleSuspend}
               focused={focused}
+              focusTick={focusTick}
               onFocus={() => setFocused(true)}
               playSound={playSound}
               autoCompleteSuggestions={matchingSuggestions}

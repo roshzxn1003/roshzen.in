@@ -26,7 +26,7 @@ export function LiveClock() {
 }
 
 // 2. STOPWATCH
-export function Stopwatch({ action }) {
+export function Stopwatch({ action, onReturnToPrompt }) {
   const [seconds, setSeconds] = useState(0)
   const [isActive, setIsActive] = useState(true)
 
@@ -62,9 +62,22 @@ export function Stopwatch({ action }) {
     <div className="my-2 rounded-xl border border-emerald-500/30 bg-black/60 p-4 font-mono">
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-widest text-emerald-400">Terminal Stopwatch</span>
-        <span className={`text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-emerald-500/20 text-emerald-300 animate-pulse' : 'bg-slate-700 text-slate-300'}`}>
-          {isActive ? 'RUNNING' : 'PAUSED'}
-        </span>
+        <div className="flex items-center gap-2">
+          {onReturnToPrompt && (
+            <button
+              type="button"
+              onClick={() => onReturnToPrompt(true)}
+              className="px-2 py-0.5 rounded text-[10px] font-mono border border-slate-800 bg-slate-900 text-slate-400 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 transition-all flex items-center gap-1 cursor-pointer"
+              title="Return to prompt (Ctrl+C)"
+            >
+              <span>Exit</span>
+              <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-red-400 border border-slate-800">Ctrl+C</kbd>
+            </button>
+          )}
+          <span className={`text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-emerald-500/20 text-emerald-300 animate-pulse' : 'bg-slate-700 text-slate-300'}`}>
+            {isActive ? 'RUNNING' : 'PAUSED'}
+          </span>
+        </div>
       </div>
       <div className="my-2 text-4xl font-black text-emerald-300 tracking-wider">
         {formatTime(seconds)}
@@ -179,11 +192,22 @@ export function QrCodeGenerator({ text, url }) {
 }
 
 // 5. INTERACTIVE CONTACT CARD
-export function InteractiveContactCard() {
+export function InteractiveContactCard({ onReturnToPrompt }) {
   return (
     <div className="my-3 rounded-2xl border border-red-500/30 bg-black/80 p-5 font-mono">
-      <div className="mb-3 text-xs font-bold uppercase tracking-widest text-red-400">
-        Connect with Arun Roshan
+      <div className="mb-3 flex items-center justify-between text-xs font-bold uppercase tracking-widest text-red-400">
+        <span>Connect with Arun Roshan</span>
+        {onReturnToPrompt && (
+          <button
+            type="button"
+            onClick={() => onReturnToPrompt(true)}
+            className="px-2 py-0.5 rounded text-[10px] font-mono border border-slate-800 bg-slate-900 text-slate-400 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 transition-all flex items-center gap-1 cursor-pointer"
+            title="Return to prompt (Ctrl+C)"
+          >
+            <span>Exit</span>
+            <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-red-400 border border-slate-800">Ctrl+C</kbd>
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <a
@@ -241,7 +265,7 @@ export function InteractiveContactCard() {
 }
 
 // 6. AI CHAT BOX (Interactive Co-Pilot)
-export function AiChatBox({ question }) {
+export function AiChatBox({ question, onReturnToPrompt }) {
   const isPickerOnly = !question || question === 'prompt_picker'
   const [currentQuery, setCurrentQuery] = useState(isPickerOnly ? '' : question)
   const [response, setResponse] = useState('')
@@ -335,6 +359,18 @@ export function AiChatBox({ question }) {
             <div className="text-[11px] text-slate-400">Ask anything about Arun's engineering skills, projects & background</div>
           </div>
         </div>
+
+        {onReturnToPrompt && (
+          <button
+            type="button"
+            onClick={() => onReturnToPrompt(true)}
+            className="px-2 py-0.5 rounded text-[10px] font-mono border border-slate-700/80 bg-slate-900/80 text-slate-400 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 transition-all flex items-center gap-1 cursor-pointer shrink-0"
+            title="Return to terminal prompt (Ctrl+C)"
+          >
+            <span>Exit</span>
+            <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-red-400 border border-slate-800">Ctrl+C</kbd>
+          </button>
+        )}
       </div>
 
       {currentQuery && (
@@ -385,7 +421,18 @@ export function AiChatBox({ question }) {
           type="text"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          placeholder="Ask a question or follow-up..."
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+              if (!window.getSelection()?.toString()?.trim()?.length) {
+                e.preventDefault()
+                onReturnToPrompt?.(true)
+              }
+            } else if (e.key === 'Escape') {
+              e.preventDefault()
+              onReturnToPrompt?.(false)
+            }
+          }}
+          placeholder="Ask a question or follow-up (Ctrl+C to exit)..."
           className="flex-1 bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
         />
         <button
@@ -402,7 +449,7 @@ export function AiChatBox({ question }) {
 }
 
 // 7. LO-FI AMBIENT CODING SYNTHESIZER
-export function LoFiPlayerCard({ action = 'play' }) {
+export function LoFiPlayerCard({ action = 'play', onReturnToPrompt }) {
   const [isPlaying, setIsPlaying] = useState(soundFX.isLoFiPlaying)
   const [bars, setBars] = useState([45, 80, 25, 90, 60, 75, 35, 95, 50, 85, 40, 70])
 
@@ -454,27 +501,41 @@ export function LoFiPlayerCard({ action = 'play' }) {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleToggle}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-            isPlaying
-              ? 'bg-purple-600/30 text-purple-300 border border-purple-500 hover:bg-purple-600/40'
-              : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-500/20'
-          }`}
-        >
-          {isPlaying ? (
-            <>
-              <Pause size={13} />
-              <span>Pause Beats</span>
-            </>
-          ) : (
-            <>
-              <Play size={13} />
-              <span>Play Lo-Fi</span>
-            </>
+        <div className="flex items-center gap-2">
+          {onReturnToPrompt && (
+            <button
+              type="button"
+              onClick={() => onReturnToPrompt(true)}
+              className="px-2 py-1.5 rounded-lg text-[10px] font-mono border border-slate-700/80 bg-slate-900/80 text-slate-400 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 transition-all flex items-center gap-1 cursor-pointer"
+              title="Return to terminal prompt (Ctrl+C)"
+            >
+              <span>Prompt</span>
+              <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-red-400 border border-slate-800">Ctrl+C</kbd>
+            </button>
           )}
-        </button>
+
+          <button
+            type="button"
+            onClick={handleToggle}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              isPlaying
+                ? 'bg-purple-600/30 text-purple-300 border border-purple-500 hover:bg-purple-600/40'
+                : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-500/20'
+            }`}
+          >
+            {isPlaying ? (
+              <>
+                <Pause size={13} />
+                <span>Pause Beats</span>
+              </>
+            ) : (
+              <>
+                <Play size={13} />
+                <span>Play Lo-Fi</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Animated Soundwave Equalizer */}

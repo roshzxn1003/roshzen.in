@@ -26,6 +26,7 @@ function TerminalInput({
   onEof,
   onSuspend,
   focused,
+  focusTick = 0,
   onFocus,
   playSound,
   autoCompleteSuggestions = [],
@@ -41,12 +42,13 @@ function TerminalInput({
     }, 0)
   }
 
-  // Force focus input whenever focused state is true
+  // Force focus input whenever focused or focusTick triggers
   useEffect(() => {
-    if (focused) {
+    if (focused || focusTick > 0) {
       inputRef.current?.focus()
+      syncCursorPos()
     }
-  }, [focused])
+  }, [focused, focusTick])
 
   useEffect(() => {
     syncCursorPos()
@@ -248,6 +250,7 @@ function TerminalInput({
                 e.stopPropagation()
                 if (playSound) playSound('enter')
                 onSubmit(action.cmd)
+                inputRef.current?.focus()
               }}
               className="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-mono border border-slate-800 bg-slate-900/80 text-slate-300 hover:text-white hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all flex items-center gap-1 cursor-pointer"
             >

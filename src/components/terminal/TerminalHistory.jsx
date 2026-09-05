@@ -14,38 +14,38 @@ const renderCommand = (command) => {
   )
 }
 
-const renderComponent = (compKey) => {
-  if (compKey === 'clock') return <LiveClock />
-  if (compKey === 'contact') return <InteractiveContactCard />
+const renderComponent = (compKey, onReturnToPrompt) => {
+  if (compKey === 'clock') return <LiveClock onReturnToPrompt={onReturnToPrompt} />
+  if (compKey === 'contact') return <InteractiveContactCard onReturnToPrompt={onReturnToPrompt} />
   if (compKey.startsWith('stopwatch:')) {
     const action = compKey.split(':')[1]
-    return <Stopwatch action={action} />
+    return <Stopwatch action={action} onReturnToPrompt={onReturnToPrompt} />
   }
   if (compKey.startsWith('hack:')) {
     const target = compKey.split(':')[1]
-    return <FakeHacker target={target} />
+    return <FakeHacker target={target} onReturnToPrompt={onReturnToPrompt} />
   }
   if (compKey.startsWith('qr:')) {
     const firstColon = compKey.indexOf(':')
     const secondColon = compKey.indexOf(':', firstColon + 1)
     const text = compKey.substring(firstColon + 1, secondColon)
     const url = compKey.substring(secondColon + 1)
-    return <QrCodeGenerator text={text} url={url} />
+    return <QrCodeGenerator text={text} url={url} onReturnToPrompt={onReturnToPrompt} />
   }
   if (compKey.startsWith('game:')) {
     const game = compKey.split(':')[1]
-    return <TerminalGames game={game} />
+    return <TerminalGames game={game} onReturnToPrompt={onReturnToPrompt} />
   }
   if (compKey.startsWith('ai:')) {
     const question = compKey.substring(3)
-    return <AiChatBox question={question} />
+    return <AiChatBox question={question} onReturnToPrompt={onReturnToPrompt} />
   }
   if (compKey.startsWith('lofi') || compKey.startsWith('music')) {
     const action = compKey.includes(':') ? compKey.split(':')[1] : 'play'
-    return <LoFiPlayerCard action={action} />
+    return <LoFiPlayerCard action={action} onReturnToPrompt={onReturnToPrompt} />
   }
   if (compKey === 'github') {
-    return <GitHubCard />
+    return <GitHubCard onReturnToPrompt={onReturnToPrompt} />
   }
   return null
 }
@@ -142,7 +142,7 @@ function TypewriterWelcome({ lines, soundEnabled = true }) {
   )
 }
 
-function TerminalHistory({ entries, soundEnabled = true }) {
+function TerminalHistory({ entries, soundEnabled = true, onReturnToPrompt }) {
   return (
     <div className="dt-history" aria-live="polite">
       {entries.map((entry) => {
@@ -169,7 +169,7 @@ function TerminalHistory({ entries, soundEnabled = true }) {
           return (
             <div className="dt-output dt-output-component my-2" key={entry.id}>
               {entry.lines.map((compKey, idx) => (
-                <div key={`${entry.id}-${idx}`}>{renderComponent(compKey)}</div>
+                <div key={`${entry.id}-${idx}`}>{renderComponent(compKey, onReturnToPrompt)}</div>
               ))}
             </div>
           )

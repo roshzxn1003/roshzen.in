@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 // 1. TIC TAC TOE GAME
-export function TicTacToeGame() {
+export function TicTacToeGame({ onReturnToPrompt }) {
   const [board, setBoard] = useState(Array(9).fill(null))
   const [winner, setWinner] = useState(null)
   const [score, setScore] = useState({ player: 0, ai: 0 })
@@ -65,9 +65,22 @@ export function TicTacToeGame() {
     <div className="my-3 inline-block rounded-2xl border border-cyan-500/40 bg-black/95 p-4 font-mono shadow-2xl">
       <div className="flex items-center justify-between gap-4 text-xs font-bold text-cyan-400 mb-3">
         <span>🎮 TIC TAC TOE</span>
-        <span className="text-slate-300 text-[11px]">
-          Player (X): <strong className="text-cyan-400">{score.player}</strong> | AI (O): <strong className="text-red-400">{score.ai}</strong>
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-slate-300 text-[11px]">
+            Player: <strong className="text-cyan-400">{score.player}</strong> | AI: <strong className="text-red-400">{score.ai}</strong>
+          </span>
+          {onReturnToPrompt && (
+            <button
+              type="button"
+              onClick={() => onReturnToPrompt(true)}
+              className="px-2 py-0.5 rounded text-[10px] font-mono border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 hover:text-white hover:bg-cyan-500/20 transition-all flex items-center gap-1 cursor-pointer"
+              title="Exit to prompt (Ctrl+C)"
+            >
+              <span>Exit</span>
+              <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-cyan-400 border border-cyan-500/40">Ctrl+C</kbd>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2 w-44 h-44 mx-auto">
@@ -113,7 +126,7 @@ export function TicTacToeGame() {
 }
 
 // 2. SNAKE GAME WITH TOUCH/KEYBOARD CONTROLS
-export function SnakeGame() {
+export function SnakeGame({ onReturnToPrompt }) {
   const [snake, setSnake] = useState([[2, 2], [2, 1]])
   const [food, setFood] = useState([5, 5])
   const [dir, setDir] = useState([0, 1])
@@ -123,6 +136,18 @@ export function SnakeGame() {
   useEffect(() => {
     if (gameOver) return
     const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+        e.preventDefault()
+        setGameOver(true)
+        onReturnToPrompt?.(true)
+        return
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setGameOver(true)
+        onReturnToPrompt?.(false)
+        return
+      }
       if (e.key === 'ArrowUp' && dir[0] !== 1) setDir([-1, 0])
       if (e.key === 'ArrowDown' && dir[0] !== -1) setDir([1, 0])
       if (e.key === 'ArrowLeft' && dir[1] !== 1) setDir([0, -1])
@@ -130,7 +155,7 @@ export function SnakeGame() {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [dir, gameOver])
+  }, [dir, gameOver, onReturnToPrompt])
 
   useEffect(() => {
     if (gameOver) return
@@ -174,9 +199,22 @@ export function SnakeGame() {
 
   return (
     <div className="my-3 inline-block rounded-2xl border border-emerald-500/40 bg-black/95 p-4 font-mono shadow-2xl">
-      <div className="flex justify-between items-center text-xs font-bold text-emerald-400 mb-2">
+      <div className="flex justify-between items-center text-xs font-bold text-emerald-400 mb-2 gap-3">
         <span>🐍 SNAKE GAME</span>
-        <span>Score: {score}</span>
+        <div className="flex items-center gap-2">
+          <span>Score: {score}</span>
+          {onReturnToPrompt && (
+            <button
+              type="button"
+              onClick={() => onReturnToPrompt(true)}
+              className="px-2 py-0.5 rounded text-[10px] font-mono border border-emerald-500/30 bg-emerald-950/40 text-emerald-300 hover:text-white hover:bg-emerald-500/20 transition-all flex items-center gap-1 cursor-pointer"
+              title="Exit game & return to prompt (Ctrl+C)"
+            >
+              <span>Exit</span>
+              <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-emerald-400 border border-emerald-500/30">Ctrl+C</kbd>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-10 gap-0.5 w-44 h-44 bg-slate-950 p-1 border border-slate-800 rounded-xl mx-auto">
@@ -217,7 +255,7 @@ export function SnakeGame() {
 }
 
 // 3. RETRO PONG GAME
-export function PongGame() {
+export function PongGame({ onReturnToPrompt }) {
   const [playerY, setPlayerY] = useState(40)
   const [aiY, setAiY] = useState(40)
   const [ball, setBall] = useState({ x: 50, y: 50, dx: 3, dy: 2 })
@@ -268,8 +306,19 @@ export function PongGame() {
 
   return (
     <div className="my-3 inline-block rounded-2xl border border-indigo-500/40 bg-black/95 p-4 font-mono shadow-2xl">
-      <div className="flex justify-between items-center text-xs font-bold text-indigo-400 mb-2">
+      <div className="flex justify-between items-center text-xs font-bold text-indigo-400 mb-2 gap-3">
         <span>🏓 PONG (You: {score.player} | CPU: {score.ai})</span>
+        {onReturnToPrompt && (
+          <button
+            type="button"
+            onClick={() => onReturnToPrompt(true)}
+            className="px-2 py-0.5 rounded text-[10px] font-mono border border-indigo-500/40 bg-indigo-950/40 text-indigo-300 hover:text-white hover:bg-indigo-500/20 transition-all flex items-center gap-1 cursor-pointer"
+            title="Exit to prompt (Ctrl+C)"
+          >
+            <span>Exit</span>
+            <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-indigo-400 border border-indigo-500/40">Ctrl+C</kbd>
+          </button>
+        )}
       </div>
 
       <div className="relative w-56 h-36 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden mx-auto">
@@ -810,15 +859,15 @@ export function DeveloperQuizGame({ initialCategory = 'all' }) {
   )
 }
 
-export function TerminalGames({ game }) {
+export function TerminalGames({ game, onReturnToPrompt }) {
   if (game && game.startsWith('quiz')) {
     const category = game.split(':')[1] || 'all'
-    return <DeveloperQuizGame initialCategory={category} />
+    return <DeveloperQuizGame initialCategory={category} onReturnToPrompt={onReturnToPrompt} />
   }
-  if (game === 'tictactoe') return <TicTacToeGame />
-  if (game === 'snake') return <SnakeGame />
-  if (game === 'pong') return <PongGame />
-  if (game === 'memory') return <MemoryGame />
-  if (game === '2048' || game === 'tetris') return <Game2048 />
-  return <DeveloperQuizGame />
+  if (game === 'tictactoe') return <TicTacToeGame onReturnToPrompt={onReturnToPrompt} />
+  if (game === 'snake') return <SnakeGame onReturnToPrompt={onReturnToPrompt} />
+  if (game === 'pong') return <PongGame onReturnToPrompt={onReturnToPrompt} />
+  if (game === 'memory') return <MemoryGame onReturnToPrompt={onReturnToPrompt} />
+  if (game === '2048' || game === 'tetris') return <Game2048 onReturnToPrompt={onReturnToPrompt} />
+  return <DeveloperQuizGame onReturnToPrompt={onReturnToPrompt} />
 }

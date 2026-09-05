@@ -91,7 +91,7 @@ const commandList = [
   'sysinfo', 'calc', 'echo', 'whois', 'hire', 'freelance', 'credits', 'thanks', 'motd', 'version',
   'ifconfig', 'ip', 'hostname', 'disk', 'memory', 'runall', 'demo', 'testall', 'batch', 'suite',
   'roshzen-links', 'links', 'open', 'goto', 'visit', 'url', 'zenith', 'techstack', 'socials', 'hire',
-  'quiz', 'trivia', 'challenge'
+  'quiz', 'trivia', 'challenge', 'crt', 'lofi', 'github'
 ]
 
 const makeOutput = (type, lines) => ({ type, lines: Array.isArray(lines) ? lines : [lines] })
@@ -461,10 +461,10 @@ export const executeCommand = (rawCommand, context = {}) => {
   }
 
   // 2. ASK (AI ASSISTANT - Requirement #9)
-  if (command === 'ask' || command === 'chat') {
+  if (command === 'ask' || command === 'chat' || command === 'ai') {
     const question = args.join(' ').replace(/^["']|["']$/g, '')
-    if (!question) return [makeOutput('error', 'Usage: ask "How do I learn React?"')]
-    return [makeOutput('component', `ai:${question}`)]
+    if (!question) return [makeOutput('component', ['ai:prompt_picker'])]
+    return [makeOutput('component', [`ai:${question}`])]
   }
 
   // 3. SEARCH PROJECTS (Requirement #4)
@@ -675,16 +675,25 @@ export const executeCommand = (rawCommand, context = {}) => {
     ]
   }
 
-  // 15. MUSIC PLAYER (Requirement #20)
-  if (command === 'music') {
-    const action = args[0] || 'play'
-    return [
-      makeOutput('success', [
-        `🎶 Lo-Fi Coding Radio [Track: ${action.toUpperCase()}]`,
-        `🎵 Now Playing: "Midnight Cyber Code" by RoshZen Beats 🎧`,
-        'Use "music play", "music stop", "music next", "music previous"',
-      ]),
-    ]
+  // 15. LO-FI CODING MUSIC PLAYER (Ambient Synthesizer)
+  if (command === 'music' || command === 'lofi' || command === 'radio' || command === 'beats') {
+    const action = (args[0] || 'play').toLowerCase()
+    return [makeOutput('component', [`lofi:${action}`])]
+  }
+
+  // 15.1 RETRO CRT MONITOR MODE
+  if (command === 'crt' || command === 'retro' || command === 'scanlines') {
+    const sub = args[0]?.toLowerCase()
+    if (sub === 'off') {
+      if (context.crtMode && context.toggleCrt) context.toggleCrt()
+      return [makeOutput('output', '📺 CRT Retro Monitor Mode [DISABLED]')]
+    }
+    if (sub === 'on') {
+      if (!context.crtMode && context.toggleCrt) context.toggleCrt()
+      return [makeOutput('success', '📺 CRT Retro Monitor Mode [ENABLED] - Authentic Phosphor Scanlines Active')]
+    }
+    if (context.toggleCrt) context.toggleCrt()
+    return [makeOutput('success', `📺 CRT Retro Monitor Mode [TOGGLED] - Now ${!context.crtMode ? 'ENABLED' : 'DISABLED'}`)]
   }
 
   // 16. THEME MANAGER (Requirement #19)
@@ -1767,8 +1776,7 @@ export const executeCommand = (rawCommand, context = {}) => {
       return [makeOutput('output', socialLinks.map((l) => `${l.label}: ${l.href}`))]
 
     case 'github':
-      openInNewTab(profile.github)
-      return [makeOutput('success', 'Opening GitHub in a new tab...')]
+      return [makeOutput('component', ['github'])]
 
     case 'linkedin':
       openInNewTab(profile.linkedin)

@@ -1,4 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
+import { Sparkles } from 'lucide-react'
+
+const QUICK_ACTIONS = [
+  { cmd: 'projects', label: 'Projects', icon: '⚡' },
+  { cmd: 'skills', label: 'Skills', icon: '🧠' },
+  { cmd: 'ask', label: 'Ask AI', icon: '🤖' },
+  { cmd: 'github', label: 'GitHub', icon: '🐙' },
+  { cmd: 'music', label: 'Lo-Fi Beats', icon: '🎵' },
+  { cmd: 'neofetch', label: 'SysInfo', icon: '💻' },
+  { cmd: 'games', label: 'Games', icon: '🎮' },
+  { cmd: 'crt', label: 'CRT', icon: '📺' },
+  { cmd: 'theme random', label: 'Theme', icon: '🎨' },
+  { cmd: 'contact', label: 'Contact', icon: '☕' },
+]
 
 function TerminalInput({
   value,
@@ -215,6 +229,31 @@ function TerminalInput({
             >
               {sug}
             </span>
+          ))}
+        </div>
+      )}
+
+      {/* Quick Action Pills Dock */}
+      {!value && (
+        <div className="mb-2 flex items-center gap-1.5 overflow-x-auto pb-1 select-none scrollbar-none opacity-85 hover:opacity-100 transition-opacity">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1 shrink-0">
+            <Sparkles size={11} className="text-amber-400" />
+            <span>Quick:</span>
+          </span>
+          {QUICK_ACTIONS.map((action) => (
+            <button
+              key={action.cmd}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                if (playSound) playSound('enter')
+                onSubmit(action.cmd)
+              }}
+              className="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-mono border border-slate-800 bg-slate-900/80 text-slate-300 hover:text-white hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <span>{action.icon}</span>
+              <span>{action.label}</span>
+            </button>
           ))}
         </div>
       )}

@@ -186,6 +186,105 @@ class SoundFX {
       // Ignore
     }
   }
+
+  startLoFi() {
+    if (!this.enabled) return false
+    const ctx = this.getAudioContext()
+    if (!ctx) return false
+
+    if (this.isLoFiPlaying) return true
+
+    try {
+      this.isLoFiPlaying = true
+
+      // Master gain for Lo-Fi music
+      this.lofiMaster = ctx.createGain()
+      this.lofiMaster.gain.setValueAtTime(0.001, ctx.currentTime)
+      this.lofiMaster.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 1.2)
+      this.lofiMaster.connect(ctx.destination)
+
+      // Warm lowpass filter for chill analog lo-fi texture
+      this.lofiFilter = ctx.createBiquadFilter()
+      this.lofiFilter.type = 'lowpass'
+      this.lofiFilter.frequency.setValueAtTime(750, ctx.currentTime)
+      this.lofiFilter.Q.setValueAtTime(2.2, ctx.currentTime)
+      this.lofiFilter.connect(this.lofiMaster)
+
+      // Chords progression: Dm9 -> G13 -> Cmaj9 -> Am9
+      const chordNotes = [
+        [146.83, 174.61, 220.0, 261.63, 329.63],
+        [98.0, 174.61, 246.94, 329.63],
+        [130.81, 164.81, 196.0, 246.94, 293.66],
+        [110.0, 196.0, 261.63, 329.63],
+      ]
+
+      let chordIdx = 0
+
+      const playChord = () => {
+        if (!this.isLoFiPlaying) return
+        const now = ctx.currentTime
+        const notes = chordNotes[chordIdx]
+        chordIdx = (chordIdx + 1) % chordNotes.length
+
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator()
+          const noteGain = ctx.createGain()
+
+          osc.type = i === 0 ? 'sine' : (i % 2 === 0 ? 'triangle' : 'sine')
+          osc.frequency.setValueAtTime(freq + (Math.random() - 0.5) * 1.5, now)
+
+          noteGain.gain.setValueAtTime(0.0001, now)
+          noteGain.gain.exponentialRampToValueAtTime(0.045, now + 0.4)
+          noteGain.gain.exponentialRampToValueAtTime(0.022, now + 2.0)
+          noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4)
+
+          osc.connect(noteGain)
+          noteGain.connect(this.lofiFilter)
+
+          osc.start(now)
+          osc.stop(now + 3.5)
+        })
+
+        this.lofiTimer = setTimeout(playChord, 3200)
+      }
+
+      playChord()
+      return true
+    } catch {
+      this.isLoFiPlaying = false
+      return false
+    }
+  }
+
+  stopLoFi() {
+    if (!this.isLoFiPlaying) return false
+    this.isLoFiPlaying = false
+    if (this.lofiTimer) clearTimeout(this.lofiTimer)
+
+    if (this.lofiMaster && this.audioCtx) {
+      try {
+        const now = this.audioCtx.currentTime
+        this.lofiMaster.gain.setValueAtTime(this.lofiMaster.gain.value, now)
+        this.lofiMaster.gain.exponentialRampToValueAtTime(0.0001, now + 0.8)
+        setTimeout(() => {
+          this.lofiMaster?.disconnect()
+          this.lofiMaster = null
+        }, 900)
+      } catch {
+        // Ignore
+      }
+    }
+    return true
+  }
+
+  toggleLoFi() {
+    if (this.isLoFiPlaying) {
+      this.stopLoFi()
+      return false
+    } else {
+      return this.startLoFi()
+    }
+  }
 }
 
 export const soundFX = new SoundFX()

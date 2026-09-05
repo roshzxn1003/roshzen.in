@@ -627,4 +627,48 @@
 
 .animate-slide-down {
   animation: slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── RETRO CRT MONITOR MODE ──────────────────────────────────────────────── */
+.developer-terminal.is-crt {
+  box-shadow:
+    inset 0 0 100px rgba(0, 0, 0, 0.8),
+    0 0 45px rgba(34, 197, 94, 0.25),
+    inset 0 0 12px rgba(34, 197, 94, 0.2) !important;
+  border-color: rgba(34, 197, 94, 0.5) !important;
+}
+
+.developer-terminal.is-crt::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+  z-index: 20;
+  background-size: 100% 3px, 4px 100%;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.9;
+  animation: crt-flicker 0.15s infinite;
+}
+
+.developer-terminal.is-crt .dt-body {
+  text-shadow: 0 0 3px currentColor;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.88; }
+  50% { opacity: 0.94; }
+  100% { opacity: 0.88; }
+}
+
+/* Scrollbar none utility for quick actions */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

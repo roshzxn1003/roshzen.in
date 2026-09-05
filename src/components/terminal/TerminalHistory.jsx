@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AiChatBox, FakeHacker, InteractiveContactCard, LiveClock, QrCodeGenerator, Stopwatch } from './InteractiveComponents'
+import { AiChatBox, FakeHacker, GitHubCard, InteractiveContactCard, LiveClock, LoFiPlayerCard, QrCodeGenerator, Stopwatch } from './InteractiveComponents'
 import { TerminalGames } from './TerminalGames'
 import { soundFX } from './sound'
 
@@ -39,6 +39,13 @@ const renderComponent = (compKey) => {
   if (compKey.startsWith('ai:')) {
     const question = compKey.substring(3)
     return <AiChatBox question={question} />
+  }
+  if (compKey.startsWith('lofi') || compKey.startsWith('music')) {
+    const action = compKey.includes(':') ? compKey.split(':')[1] : 'play'
+    return <LoFiPlayerCard action={action} />
+  }
+  if (compKey === 'github') {
+    return <GitHubCard />
   }
   return null
 }

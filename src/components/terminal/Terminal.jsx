@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Bell, Minimize2, Volume2, VolumeX } from 'lucide-react'
+import { Bell, Minimize2, Tv, Volume2, VolumeX } from 'lucide-react'
 import {
   executeCommand,
   getCommandSuggestions,
@@ -150,6 +150,24 @@ function Terminal() {
   const [matrixActive, setMatrixActive] = useState(false)
   const [focused, setFocused] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
+  const [crtMode, setCrtMode] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      return localStorage.getItem('roshzen_term_crt') === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const toggleCrtMode = useCallback(() => {
+    setCrtMode((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem('roshzen_term_crt', String(next))
+      } catch {}
+      return next
+    })
+  }, [])
   const bodyRef = useRef(null)
   const terminalRef = useRef(null)
 
@@ -311,6 +329,8 @@ function Terminal() {
       showToast,
       setSoundEnabled,
       triggerBoot: () => setIsBooting(true),
+      toggleCrt: toggleCrtMode,
+      crtMode,
     }
 
     const output = executeCommand(command, context)
@@ -398,7 +418,7 @@ function Terminal() {
   const terminalContent = (
     <section
       ref={terminalRef}
-      className={`developer-terminal theme-${themeName}${fullscreen ? ' is-fullscreen' : ''}`}
+      className={`developer-terminal theme-${themeName}${fullscreen ? ' is-fullscreen' : ''}${crtMode ? ' is-crt' : ''}`}
       style={terminalStyle}
       onClick={() => {
         setFocused(true)
@@ -444,9 +464,26 @@ function Terminal() {
           <span className="rounded bg-red-500/20 px-2 py-0.5 text-[10px] uppercase font-bold text-red-400 border border-red-500/30">
             {themeName}
           </span>
+          {crtMode && (
+            <span className="rounded bg-amber-500/20 px-1.5 py-0.2 text-[9px] uppercase font-bold text-amber-400 border border-amber-500/30 animate-pulse">
+              CRT
+            </span>
+          )}
         </div>
 
         <div className="dt-activity flex items-center gap-2">
+          <button
+            onClick={() => {
+              toggleCrtMode()
+              soundFX.unlockAudio()
+              soundFX.playTyping()
+            }}
+            className={`transition-colors cursor-pointer p-1 rounded hover:bg-white/10 ${crtMode ? 'text-amber-400 bg-amber-400/10' : 'text-slate-400 hover:text-white'}`}
+            title={crtMode ? 'CRT Scanlines ON (click to disable)' : 'CRT Scanlines OFF (click to enable)'}
+          >
+            <Tv size={15} />
+          </button>
+
           <button
             onClick={() => {
               setSoundEnabled((prev) => {
@@ -456,7 +493,7 @@ function Terminal() {
                 return next
               })
             }}
-            className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white transition-colors cursor-pointer p-1 rounded hover:bg-white/10"
             title={soundEnabled ? 'Sound is ON (click to mute)' : 'Sound is OFF (click to enable)'}
           >
             {soundEnabled ? <Volume2 size={15} className="text-emerald-400" /> : <VolumeX size={15} className="text-slate-500" />}

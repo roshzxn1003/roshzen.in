@@ -90,11 +90,11 @@ function TypewriterWelcome({ lines, soundEnabled = true }) {
         })
         setCurrentCharIdx((c) => c + 1)
 
-        // Subtle typing audio click every few chars
-        if (soundEnabled && currentCharIdx % 4 === 0) {
+        // Mechanical typing audio click on non-space characters
+        if (soundEnabled && currentLineTarget[currentCharIdx] && currentLineTarget[currentCharIdx] !== ' ') {
           soundFX.playTyping()
         }
-      }, 15)
+      }, 18)
 
       return () => clearTimeout(timer)
     } else {

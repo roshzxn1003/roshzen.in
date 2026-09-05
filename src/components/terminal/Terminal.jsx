@@ -128,6 +128,10 @@ function Terminal() {
 
   // Sound effects & boot sequence
   const [soundEnabled, setSoundEnabled] = useState(true)
+
+  useEffect(() => {
+    soundFX.enabled = soundEnabled
+  }, [soundEnabled])
   const [isBooting, setIsBooting] = useState(() => {
     if (typeof window === 'undefined') return false
     try {
@@ -396,7 +400,11 @@ function Terminal() {
       ref={terminalRef}
       className={`developer-terminal theme-${themeName}${fullscreen ? ' is-fullscreen' : ''}`}
       style={terminalStyle}
-      onClick={() => setFocused(true)}
+      onClick={() => {
+        setFocused(true)
+        soundFX.unlockAudio()
+      }}
+      onPointerDown={() => soundFX.unlockAudio()}
       aria-label="Interactive developer terminal"
     >
       <MatrixRain active={matrixActive} />
@@ -440,11 +448,18 @@ function Terminal() {
 
         <div className="dt-activity flex items-center gap-2">
           <button
-            onClick={() => setSoundEnabled((prev) => !prev)}
+            onClick={() => {
+              setSoundEnabled((prev) => {
+                const next = !prev
+                soundFX.enabled = next
+                if (next) soundFX.unlockAudio()
+                return next
+              })
+            }}
             className="text-slate-400 hover:text-white transition-colors cursor-pointer"
-            title={soundEnabled ? 'Disable sound' : 'Enable sound'}
+            title={soundEnabled ? 'Sound is ON (click to mute)' : 'Sound is OFF (click to enable)'}
           >
-            {soundEnabled ? <Volume2 size={15} className="text-red-400" /> : <VolumeX size={15} />}
+            {soundEnabled ? <Volume2 size={15} className="text-emerald-400" /> : <VolumeX size={15} className="text-slate-500" />}
           </button>
 
           {fullscreen ? (

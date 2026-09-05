@@ -77,7 +77,7 @@ const quotes = [
 const commandList = [
   'help', 'whoami', 'about', 'skills', 'skill', 'projects', 'project', 'search',
   'education', 'experience', 'contact', 'social', 'github', 'linkedin', 'resume',
-  'clear', 'theme', 'cat', 'ls', 'pwd', 'mkdir', 'touch', 'rm', 'tree', 'cd',
+  'clear', 'theme', 'themes', 'cat', 'ls', 'pwd', 'mkdir', 'touch', 'rm', 'tree', 'cd',
   'head', 'tail', 'wc', 'grep', 'find', 'cp', 'mv', 'rmdir', 'chmod', 'chown',
   'df', 'free', 'who', 'w', 'id', 'groups', 'alias', 'export', 'printenv', 'env',
   'basename', 'dirname', 'sort', 'uniq', 'tr', 'tee', 'diff', 'nslookup', 'dig', 'host',
@@ -138,9 +138,9 @@ export const getDynamicSuggestions = (rawInput) => {
   // Subcommand / Argument Autocomplete
   const argTyped = parts.slice(1).join(' ').toLowerCase()
 
-  if (cmd === 'theme') {
+  if (cmd === 'theme' || cmd === 'themes') {
     const matches = themeNames.filter((t) => t.startsWith(argTyped))
-    return matches.map((t) => `theme ${t}`)
+    return matches.map((t) => `${cmd} ${t}`)
   }
 
   if (cmd === 'skill') {
@@ -707,22 +707,43 @@ export const executeCommand = (rawCommand, context = {}) => {
   }
 
   // 16. THEME MANAGER (Requirement #19)
-  if (command === 'theme') {
-    const sub = args[0]?.toLowerCase()
+  // 16. THEME MANAGER (Requirement #19)
+  if (command === 'theme' || command === 'themes') {
+    let sub = args[0]?.toLowerCase()
+    if (sub === 'set') sub = args[1]?.toLowerCase()
 
-    if (!sub || sub === 'list') {
-      return [makeOutput('output', `Available themes: ${themeNames.join(', ')}`)]
+    if (!sub || sub === 'list' || sub === 'show' || sub === 'all') {
+      return [
+        makeOutput('header', '🎨 TERMINAL & PORTFOLIO THEMES'),
+        makeOutput('output', `Current Active Theme: "${context.themeName || 'default'}"`),
+        makeOutput('list', [
+          '  • default    : Signature Cyber Red (#ef4444)',
+          '  • red        : Crimson Blood Red (#ff3b3b)',
+          '  • green      : Emerald Neon Green (#22c55e)',
+          '  • blue       : Sky Blue Cyber (#38bdf8)',
+          '  • cyber      : Cyberpunk Lime / Yellow (#f0ff00)',
+          '  • matrix     : Matrix Hacker Green (#00ff66)',
+          '  • dracula    : Dracula Neon Pink / Purple (#ff79c6)',
+          '  • github     : GitHub Developer Blue (#58a6ff)',
+          '  • vscode     : VS Code Editor Blue (#007acc)',
+          '  • nord       : Nord Arctic Ice Cyan (#88c0d0)',
+          '  • synthwave  : Synthwave Neon Magenta (#ff7edb)',
+          '  • tokyo      : Tokyo Night Violet / Blue (#7aa2f7)',
+          '  • random     : Pick a random theme',
+        ]),
+        makeOutput('output', 'Usage: theme <name>  (e.g. "theme matrix", "theme cyber", "theme green")'),
+      ]
     }
 
     if (sub === 'random') {
       const randTheme = themeNames[Math.floor(Math.random() * themeNames.length)]
       context.setTheme(randTheme)
-      return [makeOutput('success', `Switched to random theme: "${randTheme}".`)]
+      return [makeOutput('success', `✨ Switched to random theme: "${randTheme}". Entire portfolio synchronized!`)]
     }
 
     if (themeNames.includes(sub)) {
       context.setTheme(sub)
-      return [makeOutput('success', `Theme switched to "${sub}".`)]
+      return [makeOutput('success', `🎨 Theme switched to "${sub}". Entire portfolio synchronized!`)]
     }
 
     return [makeOutput('error', `Theme "${sub}" not found. Available: ${themeNames.join(', ')}`)]

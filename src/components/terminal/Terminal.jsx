@@ -10,7 +10,7 @@ import {
 import { soundFX } from './sound'
 import TerminalHistory from './TerminalHistory'
 import TerminalInput from './TerminalInput'
-import { terminalThemes } from './theme'
+import { terminalThemes, themeNames } from './theme'
 import { applyPortfolioTheme } from '../../utils/portfolioTheme'
 import './terminal.css'
 
@@ -539,9 +539,22 @@ function Terminal() {
 
         <div className="dt-title flex items-center gap-2 font-mono text-xs text-slate-300">
           <span>arun@roshzen: ~</span>
-          <span className="rounded bg-red-500/20 px-2 py-0.5 text-[10px] uppercase font-bold text-red-400 border border-red-500/30">
-            {themeName}
-          </span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              const currentIndex = themeNames.indexOf(themeName)
+              const nextTheme = themeNames[(currentIndex + 1) % themeNames.length]
+              handleSetTheme(nextTheme)
+              showToast(`Theme: ${nextTheme}`)
+              soundFX.playEnter()
+            }}
+            className="rounded bg-red-500/20 hover:bg-red-500/35 px-2 py-0.5 text-[10px] uppercase font-bold text-red-400 border border-red-500/30 cursor-pointer transition-all hover:scale-105 active:scale-95 flex items-center gap-1"
+            title="Click to switch theme (or run 'theme <name>')"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+            <span>{themeName}</span>
+          </button>
           {crtMode && (
             <span className="rounded bg-amber-500/20 px-1.5 py-0.2 text-[9px] uppercase font-bold text-amber-400 border border-amber-500/30 animate-pulse">
               CRT

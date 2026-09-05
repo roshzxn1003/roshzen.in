@@ -387,7 +387,7 @@ export const StaggeredMenu = ({
               draggable={false}
             />
           ) : (
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-red-500 to-red-800 font-mono text-sm font-black text-white shadow-[0_0_22px_rgba(220,38,38,0.4)]">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-red-500 to-red-800 font-mono text-sm font-black text-white shadow-[0_0_22px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.4)]">
               AR
             </span>
           )}

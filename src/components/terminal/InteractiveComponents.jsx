@@ -13,7 +13,7 @@ export function LiveClock() {
   }, [])
 
   return (
-    <div className="my-2 rounded-xl border border-red-500/30 bg-black/60 p-4 font-mono shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+    <div className="my-2 rounded-xl border border-red-500/30 bg-black/60 p-4 font-mono shadow-[0_0_20px_rgba(var(--portfolio-accent-rgb,239,68,68),0.15)]">
       <div className="text-xs uppercase tracking-widest text-red-400">System Live Clock</div>
       <div className="my-1 text-3xl font-black text-white tracking-wider">
         {time.toLocaleTimeString()}

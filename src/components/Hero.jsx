@@ -58,7 +58,7 @@ function Hero({ heroStats, techBadges }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-red-400/30 bg-red-500/10 px-4 py-2 font-mono text-xs text-red-100 shadow-[0_0_30px_rgba(220,38,38,0.16)] sm:text-sm">
+          <div className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-red-400/30 bg-red-500/10 px-4 py-2 font-mono text-xs text-red-100 shadow-[0_0_30px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.16)] sm:text-sm">
             <Sparkles size={16} />
             <span className="truncate">RoshZen.exe is online</span>
           </div>
@@ -110,7 +110,7 @@ function Hero({ heroStats, techBadges }) {
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
             <a
               href="#projects"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 font-semibold text-white shadow-[0_0_34px_rgba(220,38,38,0.34)] transition hover:-translate-y-1 hover:from-red-400 hover:to-red-600"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 font-semibold text-white shadow-[0_0_34px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.34)] transition hover:-translate-y-1 hover:from-red-400 hover:to-red-600"
             >
               View Projects
               <ArrowRight size={18} />
@@ -152,7 +152,7 @@ function Hero({ heroStats, techBadges }) {
 
             <div style={{ display: 'flex', flex: '1', minHeight: 0, flexDirection: 'column', padding: '1rem' }}>
               <div className="flex flex-col items-center gap-5 sm:flex-row lg:flex-col">
-                <div className="w-full max-w-[230px] shrink-0 overflow-hidden rounded-3xl border border-red-400/35 bg-[#140606] p-2 shadow-[0_0_54px_rgba(220,38,38,0.3)] sm:max-w-[220px] lg:max-w-[250px] xl:max-w-[280px]">
+                <div className="w-full max-w-[230px] shrink-0 overflow-hidden rounded-3xl border border-red-400/35 bg-[var(--portfolio-bg-solid,#07080c)] p-2 shadow-[0_0_54px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.3)] sm:max-w-[220px] lg:max-w-[250px] xl:max-w-[280px]">
                   <img
                     src={arunAvatar}
                     alt="Arun Roshan profile portrait"

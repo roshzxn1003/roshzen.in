@@ -36,11 +36,11 @@
   background: rgba(10, 10, 14, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.25);
   border-radius: 1rem;
   pointer-events: none;
   z-index: 60;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.15);
 }
 
 .staggered-menu-header > * {
@@ -66,8 +66,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(220, 38, 38, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.1);
+  border: 1px solid rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.35);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   padding: 0.45rem 0.85rem;
@@ -79,17 +79,17 @@
   line-height: 1;
   overflow: visible;
   transition: all 0.3s ease;
-  box-shadow: 0 0 12px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 0 12px rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.2);
 }
 
 .sm-toggle:hover {
-  border-color: rgba(239, 68, 68, 0.7);
-  background: rgba(220, 38, 38, 0.22);
-  box-shadow: 0 0 18px rgba(220, 38, 38, 0.35);
+  border-color: rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.7);
+  background: rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.22);
+  box-shadow: 0 0 18px rgba(var(--portfolio-accent-glow-rgb, 220, 38, 38), 0.35);
 }
 
 .sm-toggle:focus-visible {
-  outline: 2px solid rgba(239, 68, 68, 0.6);
+  outline: 2px solid rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.6);
   outline-offset: 4px;
 }
 
@@ -159,7 +159,7 @@
   width: clamp(280px, 100vw, 420px);
   height: 100vh;
   background: rgba(6, 6, 8, 0.96);
-  border-left: 1px solid rgba(239, 68, 68, 0.2);
+  border-left: 1px solid rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.2);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   display: flex;
@@ -176,7 +176,7 @@
   right: auto;
   left: 0;
   border-left: none;
-  border-right: 1px solid rgba(239, 68, 68, 0.2);
+  border-right: 1px solid rgba(var(--portfolio-accent-rgb, 239, 68, 68), 0.2);
 }
 
 .sm-prelayers {

@@ -10,7 +10,7 @@ function Journey({ journey }) {
       />
 
       <div className="relative mx-auto max-w-5xl">
-        <div className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-red-400 via-red-700 to-transparent shadow-[0_0_22px_rgba(220,38,38,0.35)] md:left-1/2" />
+        <div className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-red-400 via-red-700 to-transparent shadow-[0_0_22px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.35)] md:left-1/2" />
 
         <div className="grid gap-6">
           {journey.map((item, index) => {
@@ -23,7 +23,7 @@ function Journey({ journey }) {
                     isEven ? '' : 'md:[&>article]:col-start-2'
                   }`}
                 >
-                  <span className="absolute left-0 top-6 z-10 grid h-10 w-10 place-items-center rounded-2xl border border-red-400/45 bg-[#0b0505] text-red-200 shadow-[0_0_28px_rgba(220,38,38,0.28)] md:left-1/2 md:-translate-x-1/2">
+                  <span className="absolute left-0 top-6 z-10 grid h-10 w-10 place-items-center rounded-2xl border border-red-400/45 bg-[var(--portfolio-bg-solid,#07080c)] text-red-200 shadow-[0_0_28px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.28)] md:left-1/2 md:-translate-x-1/2">
                     <Icon size={19} />
                   </span>
 

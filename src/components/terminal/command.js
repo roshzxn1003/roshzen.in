@@ -53,6 +53,11 @@ const aliases = {
   goto: 'open',
   visit: 'open',
   url: 'open',
+  trivia: 'quiz',
+  challenge: 'quiz',
+  'yt-dlp': 'ytd',
+  ytdownload: 'ytd',
+  'youtube-dl': 'ytd',
 }
 
 const jokes = [
@@ -88,7 +93,8 @@ const commandList = [
   'stats', 'analytics', 'blogs', 'blog', 'devmode', 'uptime', 'date', 'time', 'uname',
   'sysinfo', 'calc', 'echo', 'whois', 'hire', 'freelance', 'credits', 'thanks', 'motd', 'version',
   'ifconfig', 'ip', 'hostname', 'disk', 'memory', 'runall', 'demo', 'testall', 'batch', 'suite',
-  'roshzen-links', 'links', 'open', 'goto', 'visit', 'url', 'zenith', 'techstack', 'socials', 'hire'
+  'roshzen-links', 'links', 'open', 'goto', 'visit', 'url', 'zenith', 'techstack', 'socials', 'hire',
+  'quiz', 'trivia', 'challenge', 'ytd', 'yt-dlp'
 ]
 
 const makeOutput = (type, lines) => ({ type, lines: Array.isArray(lines) ? lines : [lines] })
@@ -182,6 +188,12 @@ export const getDynamicSuggestions = (rawInput) => {
     return matches.map((t) => `blog ${t}`)
   }
 
+  if (cmd === 'quiz') {
+    const topics = ['react', 'js', 'python', 'git', 'css', 'all']
+    const matches = topics.filter((t) => t.startsWith(argTyped))
+    return matches.map((t) => `quiz ${t}`)
+  }
+
   return []
 }
 
@@ -189,7 +201,7 @@ export const getWelcomeEntry = () =>
   makeOutput('system', [
     '⚡ Welcome to RoshZen Hackerspace Developer Terminal v4.2',
     'Type "help" to list all 40+ commands.',
-    'Try: "status", "neofetch", "projects", "skill react", "ask Tell me about Arun", "theme cyber", or "tictactoe".',
+    'Try: "quiz", "status", "neofetch", "projects", "skill react", "ask Tell me about Arun", "theme cyber", or "tictactoe".',
   ])
 
 export const executeCommand = (rawCommand, context = {}) => {
@@ -223,6 +235,15 @@ export const executeCommand = (rawCommand, context = {}) => {
 
   // Sound feedback
   if (context.playSound) context.playSound('enter')
+
+  // YTD — YouTube Downloader CLI
+  if (command === 'ytd' || command === 'yt-dlp' || command === 'ytdownload' || command === 'youtube-dl') {
+    const sub = args.join(' ').trim()
+    if (!sub) {
+      return [makeOutput('component', ['ytd:menu'])]
+    }
+    return [makeOutput('component', [`ytd:${sub}`])]
+  }
 
   // 0. OPEN ANY URL / GOTO / VISIT / SHORTCUT HANDLER
   if (command === 'open' || command === 'goto' || command === 'visit' || command === 'url') {
@@ -1404,8 +1425,10 @@ export const executeCommand = (rawCommand, context = {}) => {
   }
 
   // 30. MINI GAMES (Requirement #23)
-  if (['snake', 'pong', 'tictactoe', '2048', 'memory', 'tetris'].includes(command)) {
-    return [makeOutput('component', `game:${command}`)]
+  if (['snake', 'pong', 'tictactoe', '2048', 'memory', 'tetris', 'quiz', 'trivia', 'challenge'].includes(command)) {
+    const category = (args[0] || 'all').toLowerCase()
+    const gameParam = (command === 'quiz' || command === 'trivia' || command === 'challenge') ? `quiz:${category}` : command
+    return [makeOutput('component', `game:${gameParam}`)]
   }
 
   // 31. VIRTUAL FILE SYSTEM COMMANDS (Requirement #24)
@@ -1722,7 +1745,7 @@ export const executeCommand = (rawCommand, context = {}) => {
           '• System    : theme <name> | sound on/off | clear | uptime | date | time | uname | sysinfo | calc | echo | version | boot',
           '• Automated : runall | demo | testall | batch (Run all 40+ commands at once in 1 sequence!)',
           '• Dev Tools : npm | git | docker | qr | download | toast | music | playlist | weather | ask',
-          '• Fun/Games : neofetch | coffee | joke | quote | motd | matrix | cmatrix | stop | hack | games | snake | pong | tictactoe | 2048 | 42',
+          '• Fun/Games : quiz | snake | pong | tictactoe | 2048 | neofetch | coffee | joke | quote | motd | matrix | cmatrix | stop | hack | games | 42',
         ]),
       ]
 

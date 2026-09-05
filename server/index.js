@@ -2,7 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
 import { fileURLToPath } from 'url'
+import { spawn } from 'child_process'
 import { GoogleGenAI } from '@google/genai'
 import dotenv from 'dotenv'
 
@@ -16,7 +18,7 @@ const DATA_FILE = path.join(__dirname, 'submissions.json')
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || '*',
   methods: ['POST', 'GET'],
 }))
 app.use(express.json())
@@ -68,6 +70,94 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
+// ── YTD (YouTube Downloader) API ──────────────────────────────────────────────
+app.post('/api/ytd/info', (req, res) => {
+  const { url } = req.body
+  if (!url) return res.status(400).json({ success: false, error: 'URL is required.' })
+
+  const pythonExec = fs.existsSync(path.join(__dirname, '../.venv/bin/python3'))
+    ? path.join(__dirname, '../.venv/bin/python3')
+    : 'python3'
+
+  const proc = spawn(pythonExec, ['-m', 'ytd', 'info', url], { cwd: path.join(__dirname, '..') })
+  let stdout = ''
+  let stderr = ''
+
+  proc.stdout.on('data', (d) => { stdout += d.toString() })
+  proc.stderr.on('data', (d) => { stderr += d.toString() })
+
+  proc.on('close', (code) => {
+    if (code === 0) {
+      return res.json({ success: true, output: stdout })
+    }
+    return res.status(400).json({ success: false, error: stderr || stdout || 'Failed to extract video info' })
+  })
+})
+
+app.post('/api/ytd/download', (req, res) => {
+  const { url, quality = '720p', mediaType = 'video', audioFormat = 'mp3' } = req.body
+  if (!url) return res.status(400).json({ success: false, error: 'URL is required.' })
+
+  const pythonExec = fs.existsSync(path.join(__dirname, '../.venv/bin/python3'))
+    ? path.join(__dirname, '../.venv/bin/python3')
+    : 'python3'
+
+  const downloadDir = path.join(os.homedir(), 'Downloads', 'YTD')
+  if (!fs.existsSync(downloadDir)) {
+    fs.mkdirSync(downloadDir, { recursive: true })
+  }
+
+  const args = mediaType === 'video'
+    ? ['-m', 'ytd', 'video', url, '-q', quality, '--dir', downloadDir]
+    : ['-m', 'ytd', 'audio', url, '-f', audioFormat || 'mp3', '--dir', downloadDir]
+
+  const venvBin = path.join(__dirname, '../.venv/bin')
+  const env = { ...process.env, PATH: `${venvBin}:${process.env.PATH || ''}` }
+
+  const proc = spawn(pythonExec, args, { cwd: path.join(__dirname, '..'), env })
+  let stdout = ''
+  let stderr = ''
+
+  proc.stdout.on('data', (d) => { stdout += d.toString() })
+  proc.stderr.on('data', (d) => { stderr += d.toString() })
+
+  proc.on('close', (code) => {
+    if (code === 0) {
+      try {
+        const targetExt = mediaType === 'video' ? '.mp4' : (audioFormat === 'm4a' ? '.m4a' : '.mp3')
+        const allFiles = fs.readdirSync(downloadDir).map((f) => ({
+          name: f,
+          time: fs.statSync(path.join(downloadDir, f)).mtime.getTime(),
+        })).sort((a, b) => b.time - a.time)
+
+        const matchingFiles = allFiles.filter((f) => f.name.toLowerCase().endsWith(targetExt))
+        const latestFile = matchingFiles.length > 0 ? matchingFiles[0].name : (allFiles.length > 0 ? allFiles[0].name : null)
+
+        return res.json({
+          success: true,
+          output: stdout,
+          filename: latestFile,
+          downloadUrl: latestFile ? `/api/ytd/file/${encodeURIComponent(latestFile)}` : null,
+          localPath: latestFile ? path.join(downloadDir, latestFile) : null,
+        })
+      } catch (err) {
+        return res.json({ success: true, output: stdout })
+      }
+    }
+    return res.status(400).json({ success: false, error: stderr || stdout || 'Download failed' })
+  })
+})
+
+// Endpoint to stream the downloaded file to the browser
+app.get('/api/ytd/file/:filename', (req, res) => {
+  const filename = decodeURIComponent(req.params.filename)
+  const filePath = path.join(os.homedir(), 'Downloads', 'YTD', filename)
+  if (fs.existsSync(filePath)) {
+    return res.download(filePath, filename)
+  }
+  return res.status(404).json({ error: 'File not found on local disk' })
+})
+
 // POST /api/contact  — receive a new submission
 app.post('/api/contact', (req, res) => {
   const { name, email, projectType, message } = req.body
@@ -111,6 +201,18 @@ app.get('/api/submissions', (_req, res) => {
 
 // Health check
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', time: new Date().toISOString() }))
+
+// Serve static frontend build if dist folder exists
+const distPath = path.join(__dirname, '../dist')
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath))
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: 'API route not found' })
+    }
+    res.sendFile(path.join(distPath, 'index.html'))
+  })
+}
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {

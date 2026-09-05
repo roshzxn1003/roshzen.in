@@ -1,5 +1,6 @@
 import { AiChatBox, FakeHacker, InteractiveContactCard, LiveClock, QrCodeGenerator, Stopwatch } from './InteractiveComponents'
 import { TerminalGames } from './TerminalGames'
+import { YtCliInteractive } from './YtCliInteractive'
 
 const renderCommand = (command) => {
   const [base, ...args] = command.split(' ')
@@ -37,6 +38,9 @@ const renderComponent = (compKey) => {
   if (compKey.startsWith('ai:')) {
     const question = compKey.substring(3)
     return <AiChatBox question={question} />
+  }
+  if (compKey.startsWith('ytd:')) {
+    return <YtCliInteractive compKey={compKey} />
   }
   return null
 }

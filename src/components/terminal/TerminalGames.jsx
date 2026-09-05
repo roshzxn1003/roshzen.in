@@ -468,11 +468,357 @@ if (dir === 'LEFT') {
   )
 }
 
+// 6. DEVELOPER CODING QUIZ GAME
+const QUIZ_QUESTIONS = [
+  {
+    category: 'react',
+    difficulty: 'Intermediate',
+    question: 'What is the primary difference between useEffect and useLayoutEffect in React?',
+    options: [
+      'useLayoutEffect fires synchronously after DOM mutations before paint',
+      'useEffect only runs on the server during SSR',
+      'useLayoutEffect is deprecated in React 19',
+      'useEffect cannot access DOM element refs',
+    ],
+    answer: 0,
+    explanation: 'useLayoutEffect runs synchronously immediately after React mutates the DOM, allowing layout measurements before browser paint.',
+  },
+  {
+    category: 'react',
+    difficulty: 'Advanced',
+    question: 'In React 19, what does the new useActionState hook provide?',
+    options: [
+      'Automatic pending state, form action handler, and optimistic updates',
+      'A replacement for React Router URL query parameters',
+      'Direct WebSocket subscription management',
+      'Canvas 2D context rendering bindings',
+    ],
+    answer: 0,
+    explanation: 'useActionState handles async form actions, providing pending status, result data, and error states without boilerplate.',
+  },
+  {
+    category: 'js',
+    difficulty: 'Intermediate',
+    question: 'What will `[1, 2, 3] + [4, 5, 6]` evaluate to in JavaScript?',
+    options: [
+      '"1,2,34,5,6"',
+      '[1, 2, 3, 4, 5, 6]',
+      'NaN',
+      'TypeError: invalid array concatenation',
+    ],
+    answer: 0,
+    explanation: 'The + operator coerces arrays to strings via .toString() ("1,2,3" + "4,5,6" = "1,2,34,5,6").',
+  },
+  {
+    category: 'js',
+    difficulty: 'Beginner',
+    question: 'Which operator is used for Nullish Coalescing in modern JavaScript (ES2020+)?',
+    options: [
+      '?? (returns right-hand side only if left is null or undefined)',
+      '|| (returns right-hand side on any falsy value)',
+      '?: (ternary conditional operator)',
+      '&&= (logical AND assignment)',
+    ],
+    answer: 0,
+    explanation: '?? only falls back when the left operand is null or undefined, preserving 0, false, and empty strings.',
+  },
+  {
+    category: 'python',
+    difficulty: 'Beginner',
+    question: 'What is the output of bool([]) and bool([0]) in Python?',
+    options: [
+      'False and True',
+      'False and False',
+      'True and True',
+      'True and False',
+    ],
+    answer: 0,
+    explanation: 'Empty collections [] evaluate to False (falsy), while a list containing an element [0] is non-empty and evaluates to True.',
+  },
+  {
+    category: 'python',
+    difficulty: 'Intermediate',
+    question: 'What is the key difference between a Python list and a tuple?',
+    options: [
+      'Tuples are immutable and hashable; lists are mutable',
+      'Lists are faster for iteration than tuples',
+      'Tuples cannot store mixed data types',
+      'Lists use parenthesis () while tuples use brackets []',
+    ],
+    answer: 0,
+    explanation: 'Tuples cannot be changed once created (immutable), which makes them usable as dictionary keys when hashable.',
+  },
+  {
+    category: 'git',
+    difficulty: 'Intermediate',
+    question: 'Which command safely modifies the message of the most recent unpushed commit?',
+    options: [
+      'git commit --amend',
+      'git reset --hard HEAD~1',
+      'git revert HEAD',
+      'git rebase --abort',
+    ],
+    answer: 0,
+    explanation: 'git commit --amend combines staged changes with the previous commit and allows editing the commit message.',
+  },
+  {
+    category: 'css',
+    difficulty: 'Intermediate',
+    question: 'Which CSS property hints the browser to promote an element to its own GPU composite layer?',
+    options: [
+      'will-change: transform',
+      'display: inline-block',
+      'box-sizing: border-box',
+      'overflow-x: scroll',
+    ],
+    answer: 0,
+    explanation: 'will-change informs the browser of expected animations so it can optimize layers in advance via GPU rendering.',
+  },
+  {
+    category: 'web',
+    difficulty: 'Advanced',
+    question: 'What does the "LCP" (Largest Contentful Paint) Core Web Vital metric measure?',
+    options: [
+      'Render time of the largest image or text block visible in the viewport',
+      'Total payload size of all compressed JavaScript bundles',
+      'Time elapsed between user click and server response',
+      'Number of layout shifts occurring during scroll',
+    ],
+    answer: 0,
+    explanation: 'LCP measures perceived loading speed by recording when the main content block has finished rendering (target < 2.5s).',
+  },
+]
+
+export function DeveloperQuizGame({ initialCategory = 'all' }) {
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory)
+  const [questionIndex, setQuestionIndex] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState(null)
+  const [score, setScore] = useState(0)
+  const [streak, setStreak] = useState(0)
+  const [isCompleted, setIsCompleted] = useState(false)
+  const [highScore, setHighScore] = useState(() => {
+    if (typeof window === 'undefined') return 0
+    return parseInt(localStorage.getItem('roshzen_quiz_highscore') || '0', 10)
+  })
+
+  const filteredQuestions = selectedCategory === 'all'
+    ? QUIZ_QUESTIONS
+    : QUIZ_QUESTIONS.filter((q) => q.category === selectedCategory || q.category === 'all')
+
+  const currentQ = filteredQuestions[questionIndex % filteredQuestions.length]
+  const totalQuestions = Math.min(5, filteredQuestions.length)
+
+  const handleSelectOption = (e, optIdx) => {
+    e.stopPropagation()
+    if (selectedAnswer !== null) return
+
+    setSelectedAnswer(optIdx)
+    const isCorrect = optIdx === currentQ.answer
+
+    if (isCorrect) {
+      const newScore = score + 1
+      const newStreak = streak + 1
+      setScore(newScore)
+      setStreak(newStreak)
+      if (newScore > highScore) {
+        setHighScore(newScore)
+        try {
+          localStorage.setItem('roshzen_quiz_highscore', newScore.toString())
+        } catch {
+          // Ignore
+        }
+      }
+    } else {
+      setStreak(0)
+    }
+  }
+
+  const handleNext = (e) => {
+    e.stopPropagation()
+    if (questionIndex + 1 >= totalQuestions) {
+      setIsCompleted(true)
+    } else {
+      setQuestionIndex((prev) => prev + 1)
+      setSelectedAnswer(null)
+    }
+  }
+
+  const handleRestart = (e) => {
+    e.stopPropagation()
+    setQuestionIndex(0)
+    setSelectedAnswer(null)
+    setScore(0)
+    setStreak(0)
+    setIsCompleted(false)
+  }
+
+  const getRankBadge = (finalScore, total) => {
+    const pct = (finalScore / total) * 100
+    if (pct === 100) return { title: '🏆 10x Fullstack Architect', color: 'text-amber-400 border-amber-500/40 bg-amber-500/10' }
+    if (pct >= 80) return { title: '⚡ Senior Developer', color: 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10' }
+    if (pct >= 60) return { title: '🚀 Frontend Engineer', color: 'text-blue-400 border-blue-500/40 bg-blue-500/10' }
+    return { title: '🌱 Code Apprentice', color: 'text-slate-300 border-slate-700 bg-slate-800/40' }
+  }
+
+  const categories = [
+    { id: 'all', label: 'All Topics' },
+    { id: 'react', label: 'React' },
+    { id: 'js', label: 'JavaScript' },
+    { id: 'python', label: 'Python' },
+    { id: 'git', label: 'Git' },
+    { id: 'css', label: 'CSS' },
+  ]
+
+  return (
+    <div className="my-3 rounded-2xl border border-red-500/30 bg-black/90 p-4 font-mono text-slate-200 shadow-2xl transition-all">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-red-500/20 pb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-red-400 font-bold text-xs tracking-wider">⚡ DEVELOPER CODING QUIZ</span>
+          <span className="rounded bg-red-500/20 px-2 py-0.5 text-[10px] text-red-300 border border-red-500/30">
+            {currentQ.difficulty}
+          </span>
+        </div>
+        <div className="flex items-center gap-3 text-xs">
+          {streak > 1 && (
+            <span className="flex items-center gap-1 text-amber-400 font-bold animate-pulse">
+              🔥 {streak} Streak
+            </span>
+          )}
+          <span className="text-emerald-400 font-bold">Score: {score}/{totalQuestions}</span>
+          <span className="text-slate-500">Best: {highScore}</span>
+        </div>
+      </div>
+
+      {/* Category Pills */}
+      {!isCompleted && (
+        <div className="my-2.5 flex flex-wrap gap-1.5">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedCategory(cat.id)
+                handleRestart(e)
+              }}
+              className={`px-2.5 py-1 text-[10px] rounded-lg border transition-all cursor-pointer ${
+                selectedCategory === cat.id
+                  ? 'bg-red-500/25 text-white border-red-400 font-bold shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  : 'bg-slate-900/80 text-slate-400 border-slate-800 hover:text-slate-200 hover:border-slate-700'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Game Card */}
+      {!isCompleted ? (
+        <div className="mt-3">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
+            <span>Question {questionIndex + 1} of {totalQuestions}</span>
+            <span className="uppercase text-[10px] text-red-400 font-semibold">{currentQ.category}</span>
+          </div>
+
+          <p className="text-sm font-semibold text-white leading-relaxed mb-3.5">
+            {currentQ.question}
+          </p>
+
+          {/* Options Grid */}
+          <div className="grid grid-cols-1 gap-2">
+            {currentQ.options.map((opt, optIdx) => {
+              const isChosen = selectedAnswer === optIdx
+              const isCorrectOpt = optIdx === currentQ.answer
+              let btnStyle = 'border-slate-800 bg-slate-900/90 text-slate-300 hover:border-red-500/40 hover:bg-red-500/10'
+
+              if (selectedAnswer !== null) {
+                if (isCorrectOpt) {
+                  btnStyle = 'border-emerald-500 bg-emerald-950/50 text-emerald-300 font-semibold shadow-[0_0_12px_rgba(16,185,129,0.2)]'
+                } else if (isChosen) {
+                  btnStyle = 'border-red-500 bg-red-950/50 text-red-300 line-through'
+                } else {
+                  btnStyle = 'border-slate-900 bg-black/40 text-slate-600 opacity-60'
+                }
+              }
+
+              return (
+                <button
+                  key={optIdx}
+                  onClick={(e) => handleSelectOption(e, optIdx)}
+                  disabled={selectedAnswer !== null}
+                  className={`flex items-start gap-2.5 p-3 rounded-xl border text-xs text-left transition-all cursor-pointer ${btnStyle}`}
+                >
+                  <span className="font-bold shrink-0 text-[11px] px-1.5 py-0.5 rounded bg-black/50 border border-white/10">
+                    {String.fromCharCode(65 + optIdx)}
+                  </span>
+                  <span className="flex-1 leading-snug">{opt}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Explanation & Next */}
+          {selectedAnswer !== null && (
+            <div className="mt-3 rounded-xl border border-slate-800 bg-black/60 p-3 animate-fade-in">
+              <div className="flex items-center gap-1.5 text-xs font-bold mb-1">
+                {selectedAnswer === currentQ.answer ? (
+                  <span className="text-emerald-400">✓ Correct!</span>
+                ) : (
+                  <span className="text-red-400">✗ Incorrect!</span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                {currentQ.explanation}
+              </p>
+              <div className="mt-2.5 flex justify-end">
+                <button
+                  onClick={handleNext}
+                  className="px-4 py-1.5 rounded-lg bg-red-500 text-white font-bold text-xs hover:bg-red-600 transition-all cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+                >
+                  {questionIndex + 1 >= totalQuestions ? 'View Results 🏆' : 'Next Question ❯'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Results Card */
+        <div className="mt-3 text-center py-4 animate-fade-in">
+          <div className="text-3xl font-extrabold text-white mb-1">
+            {score} / {totalQuestions}
+          </div>
+          <div className="text-xs text-slate-400 mb-3">
+            You scored {Math.round((score / totalQuestions) * 100)}% accuracy
+          </div>
+
+          <div className={`inline-block px-3.5 py-1.5 rounded-xl border text-xs font-bold mb-4 ${getRankBadge(score, totalQuestions).color}`}>
+            {getRankBadge(score, totalQuestions).title}
+          </div>
+
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={handleRestart}
+              className="px-4 py-2 rounded-xl bg-red-500 text-white font-bold text-xs hover:bg-red-600 transition-all cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+            >
+              🔄 Play Again
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function TerminalGames({ game }) {
+  if (game && game.startsWith('quiz')) {
+    const category = game.split(':')[1] || 'all'
+    return <DeveloperQuizGame initialCategory={category} />
+  }
   if (game === 'tictactoe') return <TicTacToeGame />
   if (game === 'snake') return <SnakeGame />
   if (game === 'pong') return <PongGame />
   if (game === 'memory') return <MemoryGame />
   if (game === '2048' || game === 'tetris') return <Game2048 />
-  return <TicTacToeGame />
+  return <DeveloperQuizGame />
 }

@@ -249,7 +249,26 @@ function Terminal() {
         return
       }
 
-      // 3. Regular typing auto-focus
+      // 3. GLOBAL 'T' KEY: Press 't' anywhere on portfolio to automatically scroll to and open terminal typing
+      if (!isCtrl && !e.altKey && key === 't') {
+        const activeEl = document.activeElement
+        const isExternalInput = activeEl && (
+          activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.isContentEditable
+        ) && !terminalRef.current?.contains(activeEl)
+
+        // Only trigger if user is not typing in an external form and terminal is not already focused
+        if (!isExternalInput && !terminalRef.current?.contains(activeEl)) {
+          e.preventDefault()
+          terminalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          focusTerminalPrompt(false)
+          showToast('Terminal activated — start typing!')
+          return
+        }
+      }
+
+      // 4. Regular typing auto-focus
       if (isCtrl || e.altKey || e.metaKey) return
       const targetTag = e.target?.tagName?.toLowerCase()
       if (targetTag === 'input' || targetTag === 'textarea' || e.target?.isContentEditable) {

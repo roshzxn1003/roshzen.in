@@ -462,6 +462,16 @@ export const executeCommand = (rawCommand, context = {}) => {
 
   // 2. ASK (AI ASSISTANT - Requirement #9)
   if (command === 'ask' || command === 'chat' || command === 'ai') {
+    // Feature toggle: Deactivated per user request (preserved for instant reactivation)
+    const ENABLE_AI_ASSISTANT = false
+    if (!ENABLE_AI_ASSISTANT) {
+      return [
+        makeOutput(
+          'warning',
+          '🤖 AI Co-Pilot is currently deactivated. Run "help" to explore available terminal commands.'
+        ),
+      ]
+    }
     const question = args.join(' ').replace(/^["']|["']$/g, '')
     if (!question) return [makeOutput('component', ['ai:prompt_picker'])]
     return [makeOutput('component', [`ai:${question}`])]

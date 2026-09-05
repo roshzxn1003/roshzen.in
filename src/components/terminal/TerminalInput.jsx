@@ -14,6 +14,9 @@ const QUICK_ACTIONS = [
   { cmd: 'contact', label: 'Contact', icon: '☕' },
 ]
 
+// Toggle flag: Deactivated per user request (preserved for instant reactivation)
+const ENABLE_QUICK_ACTIONS = false
+
 function TerminalInput({
   value,
   onChange,
@@ -235,8 +238,8 @@ function TerminalInput({
         </div>
       )}
 
-      {/* Quick Action Pills Dock */}
-      {!value && (
+      {/* Quick Action Pills Dock (Deactivated per user request; set ENABLE_QUICK_ACTIONS = true to restore) */}
+      {ENABLE_QUICK_ACTIONS && !value && (
         <div className="mb-2 flex items-center gap-1.5 overflow-x-auto pb-1 select-none scrollbar-none opacity-85 hover:opacity-100 transition-opacity">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1 shrink-0">
             <Sparkles size={11} className="text-amber-400" />

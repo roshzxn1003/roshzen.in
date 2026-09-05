@@ -717,8 +717,8 @@ export const executeCommand = (rawCommand, context = {}) => {
         makeOutput('header', '🎨 TERMINAL & PORTFOLIO THEMES'),
         makeOutput('output', `Current Active Theme: "${context.themeName || 'default'}"`),
         makeOutput('list', [
-          '  • default    : Signature Cyber Red (#ef4444)',
-          '  • red        : Crimson Blood Red (#ff3b3b)',
+          '  • default    : Signature Cyber Red (Original)',
+          '  • red        : Signature Cyber Red (Original)',
           '  • green      : Emerald Neon Green (#22c55e)',
           '  • blue       : Sky Blue Cyber (#38bdf8)',
           '  • cyber      : Cyberpunk Lime / Yellow (#f0ff00)',
@@ -729,10 +729,16 @@ export const executeCommand = (rawCommand, context = {}) => {
           '  • nord       : Nord Arctic Ice Cyan (#88c0d0)',
           '  • synthwave  : Synthwave Neon Magenta (#ff7edb)',
           '  • tokyo      : Tokyo Night Violet / Blue (#7aa2f7)',
+          '  • reset      : Reset to original Red theme',
           '  • random     : Pick a random theme',
         ]),
-        makeOutput('output', 'Usage: theme <name>  (e.g. "theme matrix", "theme cyber", "theme green")'),
+        makeOutput('output', 'Usage: theme <name>  (e.g. "theme red", "theme default", "theme matrix")'),
       ]
+    }
+
+    if (sub === 'reset') {
+      context.setTheme('default')
+      return [makeOutput('success', '✨ Reset to original Red portfolio theme!')]
     }
 
     if (sub === 'random') {

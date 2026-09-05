@@ -152,7 +152,7 @@ function Hero({ heroStats, techBadges }) {
 
             <div style={{ display: 'flex', flex: '1', minHeight: 0, flexDirection: 'column', padding: '1rem' }}>
               <div className="flex flex-col items-center gap-5 sm:flex-row lg:flex-col">
-                <div className="w-full max-w-[230px] shrink-0 overflow-hidden rounded-3xl border border-red-400/35 bg-[var(--portfolio-bg-solid,#07080c)] p-2 shadow-[0_0_54px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.3)] sm:max-w-[220px] lg:max-w-[250px] xl:max-w-[280px]">
+                <div className="w-full max-w-[230px] shrink-0 overflow-hidden rounded-3xl border border-red-400/35 bg-[var(--portfolio-card-bg,#140606)] p-2 shadow-[0_0_54px_rgba(var(--portfolio-accent-glow-rgb,220,38,38),0.3)] sm:max-w-[220px] lg:max-w-[250px] xl:max-w-[280px]">
                   <img
                     src={arunAvatar}
                     alt="Arun Roshan profile portrait"

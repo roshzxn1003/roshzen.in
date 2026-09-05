@@ -13,6 +13,8 @@ export const THEME_PALETTES = {
     glowRgb: '220, 38, 38',
     lightRgb: '248, 113, 113',
     bgSolid: '#07080c',
+    cardBg: '#140606',
+    nodeBg: '#0b0505',
     shades: {
       50: '#fef2f2',
       100: '#fee2e2',
@@ -29,25 +31,27 @@ export const THEME_PALETTES = {
     menuColors: ['#1c0404', '#450a0a', '#991b1b'],
   },
   red: {
-    accent: '#ff3b3b',
-    accentRgb: '255, 59, 59',
+    accent: '#ef4444',
+    accentRgb: '239, 68, 68',
     glowRgb: '220, 38, 38',
-    lightRgb: '255, 107, 107',
-    bgSolid: '#100508',
+    lightRgb: '248, 113, 113',
+    bgSolid: '#07080c',
+    cardBg: '#140606',
+    nodeBg: '#0b0505',
     shades: {
-      50: '#fff1f2',
-      100: '#ffe4e6',
-      200: '#fecdd3',
-      300: '#fda4af',
-      400: '#ff6b6b',
-      500: '#ff3b3b',
-      600: '#e11d48',
-      700: '#be123c',
-      800: '#9f1239',
-      900: '#881337',
-      950: '#4c0519',
+      50: '#fef2f2',
+      100: '#fee2e2',
+      200: '#fecaca',
+      300: '#fca5a5',
+      400: '#f87171',
+      500: '#ef4444',
+      600: '#dc2626',
+      700: '#b91c1c',
+      800: '#991b1b',
+      900: '#7f1d1d',
+      950: '#450a0a',
     },
-    menuColors: ['#200408', '#500814', '#b0102a'],
+    menuColors: ['#1c0404', '#450a0a', '#991b1b'],
   },
   green: {
     accent: '#22c55e',
@@ -55,6 +59,8 @@ export const THEME_PALETTES = {
     glowRgb: '22, 163, 74',
     lightRgb: '74, 222, 128',
     bgSolid: '#030c08',
+    cardBg: '#04180d',
+    nodeBg: '#021208',
     shades: {
       50: '#f0fdf4',
       100: '#dcfce7',
@@ -76,6 +82,8 @@ export const THEME_PALETTES = {
     glowRgb: '14, 165, 233',
     lightRgb: '125, 211, 252',
     bgSolid: '#040a14',
+    cardBg: '#051829',
+    nodeBg: '#030f1c',
     shades: {
       50: '#f0f9ff',
       100: '#e0f2fe',
@@ -97,6 +105,8 @@ export const THEME_PALETTES = {
     glowRgb: '234, 179, 8',
     lightRgb: '253, 224, 71',
     bgSolid: '#080312',
+    cardBg: '#120524',
+    nodeBg: '#0a0214',
     shades: {
       50: '#fefce8',
       100: '#fef9c3',
@@ -118,6 +128,8 @@ export const THEME_PALETTES = {
     glowRgb: '16, 185, 129',
     lightRgb: '52, 211, 153',
     bgSolid: '#020f06',
+    cardBg: '#021808',
+    nodeBg: '#010f05',
     shades: {
       50: '#ecfdf5',
       100: '#d1fae5',
@@ -139,6 +151,8 @@ export const THEME_PALETTES = {
     glowRgb: '217, 70, 239',
     lightRgb: '240, 171, 252',
     bgSolid: '#181024',
+    cardBg: '#1e1f29',
+    nodeBg: '#161720',
     shades: {
       50: '#fdf4ff',
       100: '#fae8ff',
@@ -160,6 +174,8 @@ export const THEME_PALETTES = {
     glowRgb: '59, 130, 246',
     lightRgb: '147, 197, 253',
     bgSolid: '#0d1117',
+    cardBg: '#161b22',
+    nodeBg: '#0d1117',
     shades: {
       50: '#eff6ff',
       100: '#dbeafe',
@@ -181,6 +197,8 @@ export const THEME_PALETTES = {
     glowRgb: '2, 132, 199',
     lightRgb: '56, 189, 248',
     bgSolid: '#0a1016',
+    cardBg: '#252526',
+    nodeBg: '#1e1e1e',
     shades: {
       50: '#f0f9ff',
       100: '#e0f2fe',
@@ -202,6 +220,8 @@ export const THEME_PALETTES = {
     glowRgb: '6, 182, 212',
     lightRgb: '103, 232, 249',
     bgSolid: '#10161f',
+    cardBg: '#3b4252',
+    nodeBg: '#2e3440',
     shades: {
       50: '#ecfeff',
       100: '#cffafe',
@@ -223,6 +243,8 @@ export const THEME_PALETTES = {
     glowRgb: '244, 63, 94',
     lightRgb: '251, 113, 133',
     bgSolid: '#1a1024',
+    cardBg: '#241a38',
+    nodeBg: '#181226',
     shades: {
       50: '#fff1f2',
       100: '#ffe4e6',
@@ -244,6 +266,8 @@ export const THEME_PALETTES = {
     glowRgb: '99, 102, 241',
     lightRgb: '129, 140, 248',
     bgSolid: '#101221',
+    cardBg: '#1a1b26',
+    nodeBg: '#13141f',
     shades: {
       50: '#eef2ff',
       100: '#e0e7ff',
@@ -278,6 +302,7 @@ export function applyPortfolioTheme(themeName) {
 
   // Set top-level dataset
   root.dataset.portfolioTheme = themeName
+  const isRedTheme = themeName === 'default' || themeName === 'red'
 
   // Set primary portfolio CSS variables
   root.style.setProperty('--portfolio-accent', palette.accent)
@@ -287,11 +312,22 @@ export function applyPortfolioTheme(themeName) {
   root.style.setProperty('--portfolio-accent-soft', `rgba(${palette.accentRgb}, 0.18)`)
   root.style.setProperty('--portfolio-accent-glow', `rgba(${palette.accentRgb}, 0.35)`)
   root.style.setProperty('--portfolio-bg-solid', palette.bgSolid)
+  root.style.setProperty('--portfolio-card-bg', palette.cardBg || '#140606')
+  root.style.setProperty('--portfolio-node-bg', palette.nodeBg || '#0b0505')
 
-  // Override Tailwind red color scale directly on :root so all text-red-*, bg-red-*, border-red-* dynamically update
-  Object.entries(palette.shades).forEach(([step, color]) => {
-    root.style.setProperty(`--color-red-${step}`, color)
-  })
+  if (isRedTheme) {
+    // For original red themes, remove inline style overrides so Tailwind v4's
+    // native OKLCH red shades and subtle contrast are 100% authentically preserved as previously!
+    const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+    steps.forEach((step) => {
+      root.style.removeProperty(`--color-red-${step}`)
+    })
+  } else {
+    // Override Tailwind red color scale directly on :root so all text-red-*, bg-red-*, border-red-* dynamically update
+    Object.entries(palette.shades).forEach(([step, color]) => {
+      root.style.setProperty(`--color-red-${step}`, color)
+    })
+  }
 
   // Emit event so React components that accept explicit color props (like StaggeredMenu) can update immediately
   try {

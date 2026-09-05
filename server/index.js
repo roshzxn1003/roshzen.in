@@ -53,18 +53,41 @@ app.post('/api/chat', async (req, res) => {
     return res.status(500).json({ success: false, error: 'API key is missing on the server.' })
   }
 
+  const systemInstruction = `You are the terminal AI Co-Pilot for Arun Roshan G J (roshzen.in / roshzxn1003), a Computer Science Engineering student and developer.
+Key details about Arun:
+- Role: CSE student, Frontend & Mobile app builder (React, Tailwind CSS, JavaScript, Flutter, Riverpod, Supabase).
+- Top Projects:
+  1. RoshZen Portfolio (roshzen.in) - Cyberpunk terminal portfolio with 30+ commands, retro scanlines, lo-fi synth, and games.
+  2. Love Vault (zen-love-vault.lovable.app) - Private couple memories keepsake app with Supabase auth and encryption.
+  3. Zenith Finance - Dual-space personal & family expense tracker in Flutter & Riverpod with Supabase realtime sync.
+  4. Business landing pages, Link-in-Bio pages, and Python Daily concept.
+- Contact: arunroshan1003@gmail.com, GitHub: roshzxn1003, LinkedIn: arun-roshan-gj.
+- Status: Actively open to Software Engineering / Frontend Internships, Junior roles, and Freelance projects.
+Style guide:
+- Respond in a sharp, polite, terminal-hacker aesthetic.
+- Keep responses concise, structured, and easy to read in a CLI terminal (bullet points, clear sections).
+- Never disclose API keys or private credentials.`
+
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       contents: message,
-      config: {
-        systemInstruction: "You are a helpful AI assistant inside a developer's portfolio terminal. Keep responses concise, helpful, and terminal-friendly. Only output plain text or basic formatting."
-      }
+      config: { systemInstruction }
     })
     return res.json({ success: true, text: response.text })
   } catch (error) {
-    console.error('Chat API Error:', error)
-    return res.status(500).json({ success: false, error: 'Failed to communicate with AI.' })
+    console.warn('Gemini 2.0 Flash failed, attempting Gemini 1.5 Flash fallback...', error.message)
+    try {
+      const fallbackResponse = await ai.models.generateContent({
+        model: 'gemini-1.5-flash',
+        contents: message,
+        config: { systemInstruction }
+      })
+      return res.json({ success: true, text: fallbackResponse.text })
+    } catch (fallbackErr) {
+      console.error('Chat API Error:', fallbackErr.message)
+      return res.status(500).json({ success: false, error: 'Failed to communicate with AI: ' + (fallbackErr.message || 'API error') })
+    }
   }
 })
 

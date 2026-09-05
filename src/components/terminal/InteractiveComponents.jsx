@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowUpRight, ExternalLink, GitBranch, Globe2, Mail, MessageSquare, Music, Pause, Play, QrCode, Radio, Send, Sparkles } from 'lucide-react'
 import { soundFX } from './sound'
+import { generateKnowledgeResponse } from '../../utils/aiKnowledgeEngine.js'
 
 // 1. LIVE CLOCK
 export function LiveClock() {
@@ -245,41 +246,64 @@ export function AiChatBox({ question }) {
   const [currentQuery, setCurrentQuery] = useState(isPickerOnly ? '' : question)
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(!isPickerOnly)
-  const [error, setError] = useState(false)
+  const [provider, setProvider] = useState('Gemini 2.0')
   const [customInput, setCustomInput] = useState('')
 
   const SUGGESTED_CHIPS = [
     '🚀 What are Arun\'s top projects?',
     '⚡ What is his tech stack & experience?',
     '💼 Is Arun open to full-time or freelance hire?',
-    '🧠 Tell me about his AI & Flutter projects',
+    '🧠 Tell me about his Love Vault & Zenith apps',
   ]
 
   const askAi = async (msg) => {
     if (!msg || !msg.trim()) return
-    setCurrentQuery(msg)
+    const cleaned = msg.trim()
+    setCurrentQuery(cleaned)
     setLoading(true)
-    setError(false)
+    soundFX.key?.()
 
-    try {
-      const res = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:3001') + '/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg }),
-      })
-      const data = await res.json()
-      if (data.success) {
-        setResponse(data.text)
-      } else {
-        setError(true)
-        setResponse(data.error || 'Failed to get AI response.')
+    let answered = false
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+    const isLocalhostApi = apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1')
+    const isRemoteClient = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+
+    // If client is in production (e.g. roshzen.in) and apiUrl is localhost, don't stall waiting for dead localhost
+    if (!isRemoteClient || !isLocalhostApi) {
+      try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 3500)
+
+        const res = await fetch(`${apiUrl}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: cleaned }),
+          signal: controller.signal,
+        })
+        clearTimeout(timeoutId)
+
+        if (res.ok) {
+          const data = await res.json()
+          if (data.success && data.text) {
+            setResponse(data.text)
+            setProvider('Gemini 2.0 Flash')
+            answered = true
+          }
+        }
+      } catch {
+        // Backend offline or timeout — smoothly fall through to Knowledge Engine
       }
-    } catch {
-      setError(true)
-      setResponse('Backend AI service unreachable. Ensure server is active or GEMINI_API_KEY is configured.')
-    } finally {
-      setLoading(false)
     }
+
+    if (!answered) {
+      // Instant intelligent portfolio engine response
+      const fallbackResponse = generateKnowledgeResponse(cleaned)
+      setResponse(fallbackResponse)
+      setProvider('Portfolio Intelligence')
+    }
+
+    setLoading(false)
+    soundFX.enter?.()
   }
 
   useEffect(() => {
@@ -304,9 +328,11 @@ export function AiChatBox({ question }) {
           <div>
             <div className="text-sm font-bold text-blue-400 flex items-center gap-1.5">
               <span>RoshZen AI Co-Pilot</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-normal">Gemini 2.5</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-normal border border-blue-500/30">
+                {provider}
+              </span>
             </div>
-            <div className="text-[11px] text-slate-400">Ask anything about Arun's engineering skills & background</div>
+            <div className="text-[11px] text-slate-400">Ask anything about Arun's engineering skills, projects & background</div>
           </div>
         </div>
       </div>
@@ -324,10 +350,8 @@ export function AiChatBox({ question }) {
             <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
             <span className="animate-pulse">Thinking & generating response...</span>
           </div>
-        ) : error ? (
-          <div className="text-red-400 py-1">{response}</div>
         ) : response ? (
-          <div className="py-1">{response}</div>
+          <div className="py-1 leading-relaxed text-slate-100">{response}</div>
         ) : (
           <div className="text-slate-400 py-1 italic">
             Select a quick prompt below or type your question:
@@ -361,7 +385,7 @@ export function AiChatBox({ question }) {
           type="text"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          placeholder="Ask a follow-up question..."
+          placeholder="Ask a question or follow-up..."
           className="flex-1 bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
         />
         <button

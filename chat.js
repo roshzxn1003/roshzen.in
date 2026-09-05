@@ -31,7 +31,7 @@ console.log('========================================================\n');
 async function startChat() {
   try {
     const chat = ai.chats.create({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       config: {
         systemInstruction: 'You are a helpful AI assistant.',
       }

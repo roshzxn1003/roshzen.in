@@ -55,9 +55,6 @@ const aliases = {
   url: 'open',
   trivia: 'quiz',
   challenge: 'quiz',
-  'yt-dlp': 'ytd',
-  ytdownload: 'ytd',
-  'youtube-dl': 'ytd',
 }
 
 const jokes = [
@@ -94,7 +91,7 @@ const commandList = [
   'sysinfo', 'calc', 'echo', 'whois', 'hire', 'freelance', 'credits', 'thanks', 'motd', 'version',
   'ifconfig', 'ip', 'hostname', 'disk', 'memory', 'runall', 'demo', 'testall', 'batch', 'suite',
   'roshzen-links', 'links', 'open', 'goto', 'visit', 'url', 'zenith', 'techstack', 'socials', 'hire',
-  'quiz', 'trivia', 'challenge', 'ytd', 'yt-dlp'
+  'quiz', 'trivia', 'challenge'
 ]
 
 const makeOutput = (type, lines) => ({ type, lines: Array.isArray(lines) ? lines : [lines] })
@@ -235,15 +232,6 @@ export const executeCommand = (rawCommand, context = {}) => {
 
   // Sound feedback
   if (context.playSound) context.playSound('enter')
-
-  // YTD — YouTube Downloader CLI
-  if (command === 'ytd' || command === 'yt-dlp' || command === 'ytdownload' || command === 'youtube-dl') {
-    const sub = args.join(' ').trim()
-    if (!sub) {
-      return [makeOutput('component', ['ytd:menu'])]
-    }
-    return [makeOutput('component', [`ytd:${sub}`])]
-  }
 
   // 0. OPEN ANY URL / GOTO / VISIT / SHORTCUT HANDLER
   if (command === 'open' || command === 'goto' || command === 'visit' || command === 'url') {
